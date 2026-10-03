@@ -66,19 +66,35 @@
     historia.addEventListener("click", (e) => { if (e.target === historia) fecha(); });
   }
 
+  /* ------------------------------------------- acessibilidade das gavetas --- */
+  // Gaveta fechada fica "inert" (sem foco, fora da leitura de tela); ao fechar, o foco
+  // volta para o botão que abriu.
+  const fechada = (el, v) => {
+    if (!el) return;
+    if (v) { el.setAttribute("inert", ""); el.setAttribute("aria-hidden", "true"); }
+    else { el.removeAttribute("inert"); el.removeAttribute("aria-hidden"); }
+  };
+
   /* -------------------------------------------------------- menu móvel --- */
   const menu = $("[data-menu-mob]");
   const burger = $("[data-abrir-menu]");
   if (menu && burger) {
+    fechada(menu, true);
     const abrir = (v) => {
       menu.classList.toggle("on", v);
+      fechada(menu, !v);
       burger.setAttribute("aria-expanded", v ? "true" : "false");
       document.body.style.overflow = v ? "hidden" : "";
+      if (v) {
+        setTimeout(() => $(".menu-mob__x", menu)?.focus(), 30);
+      } else if (menu.contains(document.activeElement) || document.activeElement === document.body) {
+        burger.focus();
+      }
     };
     burger.addEventListener("click", () => abrir(true));
     $$("[data-fechar-menu]").forEach((b) => b.addEventListener("click", () => abrir(false)));
     menu.addEventListener("click", (e) => { if (e.target.closest("a")) abrir(false); });
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") abrir(false); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && menu.classList.contains("on")) abrir(false); });
   }
 
   /* --------------------------------------------------------- cabeçalho --- */
@@ -166,7 +182,7 @@
     const meu = ++pedido;
     corpo.innerHTML = carregando();
     try {
-      const r = await fetch(`${W.ajax}?action=sg_busca&nonce=${encodeURIComponent(W.nonce)}&q=${encodeURIComponent(q)}`, {
+      const r = await fetch(`${W.ajax}?action=sg_busca&q=${encodeURIComponent(q.slice(0, 60))}`, {
         credentials: "same-origin",
       });
       const dados = await r.json();
@@ -185,15 +201,24 @@
   let t = null;
   campo.addEventListener("input", () => { clearTimeout(t); t = setTimeout(procurar, 160); });
 
+  let origem = null; // quem abriu a busca, para devolver o foco
+  fechada(painel, true);
+
   function abrir(v) {
     painel.classList.toggle("on", v);
+    fechada(painel, !v);
     document.body.style.overflow = v ? "hidden" : "";
     if (v) { corpo.innerHTML = dica(); setTimeout(() => campo.focus(), 60); }
-    else { campo.value = ""; }
+    else {
+      campo.value = "";
+      if (origem && document.contains(origem)) origem.focus();
+      origem = null;
+    }
   }
 
   document.addEventListener("click", (e) => {
-    if (e.target.closest("[data-abrir-busca]")) { e.preventDefault(); return abrir(true); }
+    const gatilho = e.target.closest("[data-abrir-busca]");
+    if (gatilho) { e.preventDefault(); origem = gatilho; return abrir(true); }
     if (e.target.closest("[data-fechar-busca]") || e.target.closest(".busca__fundo")) return abrir(false);
     const sug = e.target.closest("[data-sug]");
     if (sug) { campo.value = sug.dataset.sug; campo.focus(); procurar(); }
@@ -219,7 +244,7 @@
     if (e.key === "Escape" && painel.classList.contains("on")) abrir(false);
     if (e.key === "/" && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)
         && !document.activeElement.isContentEditable && !painel.classList.contains("on")) {
-      e.preventDefault(); abrir(true);
+      e.preventDefault(); origem = document.activeElement; abrir(true);
     }
   });
 })();

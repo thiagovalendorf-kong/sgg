@@ -15,7 +15,7 @@ sg_migalhas();
 while ( have_posts() ) :
 	the_post();
 	?>
-	<section class="sec sec--curto" style="padding-top:8px"><div class="wrap">
+	<section class="sec sec--curto sec--topo-curto"><div class="wrap">
 		<article <?php post_class( 'pagina' ); ?>>
 			<header class="sec__cab">
 				<div><h1 class="h-sec"><?php the_title(); ?></h1></div>

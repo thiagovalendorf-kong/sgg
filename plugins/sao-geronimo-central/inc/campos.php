@@ -29,10 +29,11 @@ function sgc_attr_se( $c ) {
  * @param mixed  $valor Valor atual.
  * @param string $nome  Nome do input (para listas, é o nome do subcampo).
  * @param bool   $dentro Está dentro de uma lista?
+ * @param string $id_item Id do controle dentro da lista (liga o rótulo).
  */
-function sgc_controle( $c, $valor, $dentro = false ) {
+function sgc_controle( $c, $valor, $dentro = false, $id_item = '' ) {
 	$k   = esc_attr( $c['k'] );
-	$id  = $dentro ? '' : ' id="sgc-' . $k . '"';
+	$id  = $dentro ? ( $id_item ? ' id="' . esc_attr( $id_item ) . '"' : '' ) : ' id="sgc-' . $k . '"';
 	$dk  = $dentro ? ' data-sub="' . $k . '"' : ' data-k="' . $k . '"';
 	$ph  = isset( $c['p'] ) ? ' placeholder="' . esc_attr( $c['p'] ) . '"' : '';
 
@@ -114,7 +115,12 @@ function sgc_linha( $c, $base ) {
 	$larga = in_array( $c['t'], array( 'lista', 'ordem', 'cats', 'css', 'html' ), true ) ? ' sgc-campo--largo' : '';
 	?>
 	<div class="sgc-campo<?php echo esc_attr( $larga ); ?>"<?php echo sgc_attr_se( $c ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
-		<label class="sgc-rotulo" for="sgc-<?php echo esc_attr( $c['k'] ); ?>"><?php echo esc_html( $c['l'] ); ?></label>
+		<?php $composto = in_array( $c['t'], array( 'lista', 'ordem', 'cats' ), true ); ?>
+		<?php if ( $composto ) : ?>
+			<span class="sgc-rotulo" id="sgc-rot-<?php echo esc_attr( $c['k'] ); ?>"><?php echo esc_html( $c['l'] ); ?></span>
+		<?php else : ?>
+			<label class="sgc-rotulo" for="sgc-<?php echo esc_attr( $c['k'] ); ?>"><?php echo esc_html( $c['l'] ); ?></label>
+		<?php endif; ?>
 		<?php if ( ! empty( $c['a'] ) ) : ?>
 			<p class="sgc-ajuda"><?php echo esc_html( $c['a'] ); ?></p>
 		<?php endif; ?>
@@ -131,7 +137,7 @@ function sgc_linha( $c, $base ) {
  */
 function sgc_campo_cats( $c, $valor ) {
 	$cats = taxonomy_exists( 'product_cat' ) ? get_terms( array( 'taxonomy' => 'product_cat', 'hide_empty' => false, 'orderby' => 'name' ) ) : array();
-	echo '<div class="sgc-cats" data-cats data-k="' . esc_attr( $c['k'] ) . '">';
+	echo '<div class="sgc-cats" role="group" aria-labelledby="sgc-rot-' . esc_attr( $c['k'] ) . '" data-cats data-k="' . esc_attr( $c['k'] ) . '">';
 	if ( is_wp_error( $cats ) || ! $cats ) {
 		echo '<p class="sgc-ajuda">Cadastre categorias de produtos primeiro.</p>';
 	} else {
@@ -152,7 +158,7 @@ function sgc_campo_cats( $c, $valor ) {
  * @param array $itens Itens atuais.
  */
 function sgc_campo_lista( $c, $itens ) {
-	echo '<div class="sgc-lista" data-lista data-k="' . esc_attr( $c['k'] ) . '" data-nome="' . esc_attr( $c['item'] ) . '">';
+	echo '<div class="sgc-lista" role="group" aria-labelledby="sgc-rot-' . esc_attr( $c['k'] ) . '" data-lista data-k="' . esc_attr( $c['k'] ) . '" data-nome="' . esc_attr( $c['item'] ) . '">';
 	echo '<div class="sgc-lista__itens" data-itens>';
 	foreach ( array_values( $itens ) as $i => $item ) {
 		sgc_item_lista( $c, is_array( $item ) ? $item : array(), $i + 1 );
@@ -173,17 +179,25 @@ function sgc_campo_lista( $c, $itens ) {
  * @param int   $n    Posição.
  */
 function sgc_item_lista( $c, $item, $n ) {
+	static $seq = 0;
+	$nome = strtolower( $c['item'] );
+	$ref  = $n ? ' ' . (int) $n : '';
 	echo '<div class="sgc-item" data-item draggable="false">';
-	echo '<div class="sgc-item__topo"><span class="sgc-item__alca" data-alca title="Arraste para mudar a ordem">⋮⋮</span><b data-titulo>' . esc_html( $c['item'] ) . ' <i data-n>' . ( $n ? (int) $n : '' ) . '</i></b>';
-	echo '<span class="sgc-item__acoes"><button type="button" class="sgc-mini" data-sobe title="Subir">↑</button><button type="button" class="sgc-mini" data-desce title="Descer">↓</button><button type="button" class="sgc-mini sgc-mini--x" data-remove title="Remover">✕</button></span></div>';
+	echo '<div class="sgc-item__topo"><span class="sgc-item__alca" data-alca aria-hidden="true" title="Arraste para mudar a ordem">⋮⋮</span><b data-titulo>' . esc_html( $c['item'] ) . ' <i data-n>' . ( $n ? (int) $n : '' ) . '</i></b>';
+	echo '<span class="sgc-item__acoes">';
+	echo '<button type="button" class="sgc-mini" data-sobe aria-label="' . esc_attr( 'Subir ' . $nome . $ref ) . '" title="Subir">↑</button>';
+	echo '<button type="button" class="sgc-mini" data-desce aria-label="' . esc_attr( 'Descer ' . $nome . $ref ) . '" title="Descer">↓</button>';
+	echo '<button type="button" class="sgc-mini sgc-mini--x" data-remove aria-label="' . esc_attr( 'Remover ' . $nome . $ref ) . '" title="Remover">✕</button>';
+	echo '</span></div>';
 	echo '<div class="sgc-item__corpo">';
 	foreach ( $c['sub'] as $s ) {
-		$v = isset( $item[ $s['k'] ] ) ? $item[ $s['k'] ] : ( $s['d'] ?? '' );
-		echo '<div class="sgc-campo"><label class="sgc-rotulo">' . esc_html( $s['l'] ) . '</label>';
+		$v  = isset( $item[ $s['k'] ] ) ? $item[ $s['k'] ] : ( $s['d'] ?? '' );
+		$id = 'sgc-s' . ( ++$seq );
+		echo '<div class="sgc-campo"><label class="sgc-rotulo" for="' . esc_attr( $id ) . '">' . esc_html( $s['l'] ) . '</label>';
 		if ( ! empty( $s['a'] ) ) {
 			echo '<p class="sgc-ajuda">' . esc_html( $s['a'] ) . '</p>';
 		}
-		sgc_controle( $s, $v, true );
+		sgc_controle( $s, $v, true, $id );
 		echo '</div>';
 	}
 	echo '</div></div>';
@@ -203,15 +217,15 @@ function sgc_campo_ordem( $c ) {
 			$ordem[] = $b;
 		}
 	}
-	echo '<ol class="sgc-ordem" data-ordem data-k="_ordem">';
+	echo '<ol class="sgc-ordem" aria-labelledby="sgc-rot-home_ordem" data-ordem data-k="_ordem">';
 	foreach ( $ordem as $b ) {
 		if ( ! isset( $blocos[ $b ] ) ) {
 			continue;
 		}
 		$on = 'nao' !== ( $base[ 'home_' . $b . '_ativo' ] ?? 'sim' );
 		printf(
-			'<li class="sgc-ordem__item%s" data-b="%s" draggable="true"><span class="sgc-item__alca">⋮⋮</span><span class="sgc-ordem__nome">%s</span><button type="button" class="sgc-mini" data-sobe title="Subir">↑</button><button type="button" class="sgc-mini" data-desce title="Descer">↓</button><button type="button" class="sgc-olho" data-olho title="Mostrar / esconder" aria-pressed="%s"><span class="on">👁</span><span class="off">🚫</span></button></li>',
-			$on ? '' : ' is-off', esc_attr( $b ), esc_html( $blocos[ $b ] ), $on ? 'true' : 'false' // phpcs:ignore WordPress.Security.EscapeOutput
+			'<li class="sgc-ordem__item%1$s" data-b="%4$s" draggable="true"><span class="sgc-item__alca" aria-hidden="true">⋮⋮</span><span class="sgc-ordem__nome">%2$s</span><button type="button" class="sgc-mini" data-sobe aria-label="Subir %2$s" title="Subir">↑</button><button type="button" class="sgc-mini" data-desce aria-label="Descer %2$s" title="Descer">↓</button><button type="button" class="sgc-olho" data-olho aria-label="Mostrar ou esconder %2$s" title="Mostrar / esconder" aria-pressed="%3$s"><span class="on">👁</span><span class="off">🚫</span></button></li>',
+			$on ? '' : ' is-off', esc_html( $blocos[ $b ] ), $on ? 'true' : 'false', esc_attr( $b ) // phpcs:ignore WordPress.Security.EscapeOutput
 		);
 	}
 	echo '</ol>';

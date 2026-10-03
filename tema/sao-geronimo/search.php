@@ -24,7 +24,7 @@ if ( function_exists( 'wc_get_products' ) && $sg_termo ) {
 	) );
 }
 ?>
-<section class="sec sec--curto" style="padding-top:8px"><div class="wrap">
+<section class="sec sec--curto sec--topo-curto"><div class="wrap">
 	<div class="res-busca__cab">
 		<span class="eyebrow"><?php esc_html_e( 'Loja', 'sao-geronimo' ); ?></span>
 		<h1 class="h-sec">
@@ -78,8 +78,8 @@ if ( function_exists( 'wc_get_products' ) && $sg_termo ) {
 	) );
 	if ( $sg_conteudo->have_posts() ) :
 		?>
-		<div class="sec__cab" style="margin-top:56px">
-			<div><h2 class="h-sec" style="font-size:1.6rem"><?php esc_html_e( 'Também encontramos nestes conteúdos', 'sao-geronimo' ); ?></h2></div>
+		<div class="sec__cab sec__cab--espaco">
+			<div><h2 class="h-sec h-sec--menor"><?php esc_html_e( 'Também encontramos nestes conteúdos', 'sao-geronimo' ); ?></h2></div>
 		</div>
 		<ul class="lista-links">
 			<?php

@@ -22,6 +22,13 @@ $sg_banners = array_values( array_filter( $sg_banners, function ( $b ) {
 } ) );
 
 $sg_tempo = max( 2000, (int) sg_opt( 'banner_tempo', 7000 ) );
+
+// Sem banner e sem frase não há o que mostrar: nada de faixa vazia colada no topo.
+// A home sempre precisa de um <h1> (acessibilidade e SEO), então ele sai só para leitores de tela.
+if ( ! $sg_banners && ! sg_opt( 'hero_frase' ) ) {
+	echo '<h1 class="sr">' . esc_html( sg_opt( 'logo_texto', get_bloginfo( 'name' ) ) ) . '</h1>';
+	return;
+}
 ?>
 <section class="hero"><div class="wrap">
 
@@ -63,13 +70,15 @@ $sg_tempo = max( 2000, (int) sg_opt( 'banner_tempo', 7000 ) );
 		</div>
 	<?php endif; ?>
 
-	<?php if ( sg_opt( 'hero_frase' ) ) : ?>
+	<?php if ( ! sg_opt( 'hero_frase' ) ) : ?>
+		<h1 class="sr"><?php echo esc_html( sg_opt( 'logo_texto', get_bloginfo( 'name' ) ) ); ?></h1>
+	<?php else : ?>
 		<div class="hero__abaixo">
 			<div>
 				<h1 class="h-xl hero__frase"><?php echo wp_kses_post( sg_opt( 'hero_frase' ) ); ?></h1>
 
 				<?php if ( sg_opt( 'hero_sub' ) ) : ?>
-					<p class="texto-mudo" style="margin-top:20px;max-width:36rem"><?php echo esc_html( sg_opt( 'hero_sub' ) ); ?></p>
+					<p class="texto-mudo hero__sub-txt"><?php echo esc_html( sg_opt( 'hero_sub' ) ); ?></p>
 				<?php endif; ?>
 
 				<?php
@@ -86,7 +95,7 @@ $sg_tempo = max( 2000, (int) sg_opt( 'banner_tempo', 7000 ) );
 					$sg_b2_url = '#';
 				}
 				?>
-				<div style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap">
+				<div class="hero__acoes">
 					<a href="<?php echo esc_url( $sg_b1_url ); ?>" class="btn btn--azul"><?php echo esc_html( $sg_b1_txt ); ?> <?php echo sg_icone( 'seta', 12 ); // phpcs:ignore WordPress.Security.EscapeOutput ?></a>
 					<?php if ( $sg_b2_txt ) : ?>
 						<a href="<?php echo esc_url( $sg_b2_url ); ?>" class="btn btn--vazado"><?php echo esc_html( $sg_b2_txt ); ?></a>

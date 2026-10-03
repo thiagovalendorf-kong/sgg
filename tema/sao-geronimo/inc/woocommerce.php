@@ -23,6 +23,8 @@ remove_action( 'woocommerce_sidebar', 'woocommerce_get_sidebar', 10 );
 remove_action( 'woocommerce_before_shop_loop', 'woocommerce_result_count', 20 );
 remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
 
+// O tema já desenha o título na capa; evita o título duplicado do WooCommerce.
+add_filter( 'woocommerce_show_page_title', '__return_false' );
 add_action( 'woocommerce_before_main_content', 'sg_wc_abre', 10 );
 add_action( 'woocommerce_after_main_content', 'sg_wc_fecha', 10 );
 
@@ -30,7 +32,7 @@ add_action( 'woocommerce_after_main_content', 'sg_wc_fecha', 10 );
  * Abertura das páginas do Woo.
  *
  * Reproduz o começo das páginas de categoria do site original: capa com o
- * título, migalhas de pão, pílulas de filtro e a barra com a contagem.
+ * título, migalhas de pão, filtros laterais e a barra com a contagem.
  */
 function sg_wc_abre() {
 	$e_lista = ( function_exists( 'is_shop' ) && is_shop() ) || is_product_category() || is_product_tag();
@@ -63,42 +65,6 @@ function sg_wc_abre() {
 }
 
 /**
- * Pílulas que filtram a grade por sublinha (as etiquetas do produto).
- */
-function sg_wc_pilulas() {
-	global $wp_query;
-
-	if ( empty( $wp_query->posts ) ) {
-		return;
-	}
-
-	$subs = array();
-	foreach ( $wp_query->posts as $sg_p ) {
-		$id = is_object( $sg_p ) ? $sg_p->ID : (int) $sg_p;
-		$ts = get_the_terms( $id, 'product_tag' );
-		if ( $ts && ! is_wp_error( $ts ) ) {
-			foreach ( $ts as $t ) {
-				$subs[ $t->name ] = true;
-			}
-		}
-	}
-
-	if ( count( $subs ) < 2 ) {
-		return;
-	}
-
-	$subs = array_keys( $subs );
-	sort( $subs );
-
-	echo '<div class="pilulas" style="margin-bottom:32px">';
-	echo '<button class="pilula on" data-sub="">' . esc_html__( 'Todos', 'sao-geronimo' ) . '</button>';
-	foreach ( $subs as $s ) {
-		echo '<button class="pilula" data-sub="' . esc_attr( $s ) . '">' . esc_html( $s ) . '</button>';
-	}
-	echo '</div>';
-}
-
-/**
  * Barra com a contagem de produtos e a ordenação.
  */
 function sg_wc_barra() {
@@ -111,7 +77,11 @@ function sg_wc_barra() {
 		'<span class="contagem" data-contagem>%s</span>',
 		esc_html( sprintf( _n( '%d produto', '%d produtos', $n, 'sao-geronimo' ), $n ) )
 	);
+	// Sem JavaScript o select precisa de um botão para enviar.
+	ob_start();
 	woocommerce_catalog_ordering();
+	$ord = ob_get_clean();
+	echo str_replace( '</form>', '<noscript><button type="submit" class="btn btn--azul">' . esc_html__( 'Ordenar', 'sao-geronimo' ) . '</button></noscript></form>', $ord ); // phpcs:ignore WordPress.Security.EscapeOutput
 	echo '</div>';
 	sg_wc_filtros_topo();
 }
@@ -245,115 +215,319 @@ function sg_wc_eyebrow() {
 add_action( 'woocommerce_single_product_summary', 'sg_wc_eyebrow', 4 );
 
 /**
- * Marca e referência logo abaixo do título.
+ * Marca e referência (SKU) logo abaixo do título.
+ * As estrelas ficam por conta da avaliação nativa, logo depois.
  */
 function sg_wc_marca_ref() {
 	global $product;
 	if ( ! $product ) {
 		return;
 	}
-
-	$marca = get_post_meta( $product->get_id(), '_sg_marca', true );
+	$marca = trim( (string) get_post_meta( $product->get_id(), '_sg_marca', true ) );
 	$sku   = $product->get_sku();
-	$nota  = $product->get_average_rating();
-
-	if ( ! $marca && ! $sku && ! $nota ) {
+	if ( ! $marca && ! $sku ) {
 		return;
 	}
-
-	echo '<div class="prod__nota" style="margin-top:10px">';
-	if ( $nota > 0 ) {
-		for ( $i = 0; $i < 5; $i++ ) {
-			echo '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.5 7 .9-5 4.8 1.3 6.8L12 17.8 5.7 21l1.3-6.8-5-4.8 7-.9L12 2Z"/></svg>';
-		}
-		echo ' ' . esc_html( number_format_i18n( $nota, 1 ) );
+	echo '<p class="pdp__marca">';
+	if ( $marca ) {
+		echo '<span class="pdp__marca-nome">' . esc_html( $marca ) . '</span>';
 	}
-	$txt = array_filter( array( $marca, $sku ? 'Ref. ' . $sku : '' ) );
-	if ( $txt ) {
-		echo ( $nota > 0 ? ' · ' : '' ) . esc_html( implode( ' · ', $txt ) );
+	if ( $sku ) {
+		echo '<span class="pdp__ref">' . esc_html__( 'Ref.', 'sao-geronimo' ) . ' ' . esc_html( $sku ) . '</span>';
 	}
-	echo '</div>';
+	echo '</p>';
 }
 add_action( 'woocommerce_single_product_summary', 'sg_wc_marca_ref', 6 );
+
+/**
+ * Se o produto é "sob consulta".
+ *
+ * @param WC_Product|int $produto Produto ou ID.
+ * @return bool
+ */
+function sg_wc_e_consulta( $produto ) {
+	$id = is_object( $produto ) ? ( $produto->is_type( 'variation' ) ? $produto->get_parent_id() : $produto->get_id() ) : (int) $produto;
+	return 'yes' === get_post_meta( $id, '_sg_sob_consulta', true );
+}
+
+/**
+ * Percentual de desconto (0 se não houver oferta).
+ *
+ * @param float $cheio Preço cheio.
+ * @param float $atual Preço atual.
+ * @return int
+ */
+function sg_wc_pct_off( $cheio, $atual ) {
+	return ( $cheio > 0 && $atual > 0 && $cheio > $atual ) ? (int) round( ( 1 - $atual / $cheio ) * 100 ) : 0;
+}
+
+/**
+ * Preço da página do produto, com a etiqueta de desconto ao lado.
+ */
+function sg_wc_preco_pdp() {
+	global $product;
+	if ( ! $product ) {
+		return;
+	}
+	$off = 0;
+	if ( ! sg_wc_e_consulta( $product ) && $product->is_on_sale() && ! $product->is_type( 'variable' ) ) {
+		$off = sg_wc_pct_off( (float) wc_get_price_to_display( $product, array( 'price' => $product->get_regular_price() ) ), (float) wc_get_price_to_display( $product ) );
+	}
+	echo '<div class="pdp__precobox"><p class="price">' . $product->get_price_html() . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput
+	echo '<span class="pdp__off" data-sg-off' . ( $off ? '' : ' hidden' ) . '>' . ( $off ? '-' . (int) $off . '%' : '' ) . '</span></div>';
+}
+remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 10 );
+add_action( 'woocommerce_single_product_summary', 'sg_wc_preco_pdp', 10 );
+
+/**
+ * Texto "preço no Pix · parcelas" para um valor.
+ *
+ * @param float $preco Preço.
+ * @return string
+ */
+function sg_wc_cond_texto( $preco ) {
+	if ( $preco <= 0 ) {
+		return '';
+	}
+	$n = sg_parcelas();
+	return sprintf(
+		/* translators: 1: preço no pix, 2: percentual, 3: parcelas, 4: valor da parcela */
+		__( '%1$s no Pix, com %2$s%% de desconto · ou %3$dx de %4$s sem juros', 'sao-geronimo' ),
+		sg_preco_texto( sg_preco_pix( $preco ) ),
+		rtrim( rtrim( number_format_i18n( (float) sg_opt( 'pix_desconto', 5 ), 1 ), '0' ), ',.' ),
+		$n,
+		sg_preco_texto( $preco / $n )
+	);
+}
 
 /**
  * Linha de "preço no Pix + parcelamento" abaixo do preço.
  */
 function sg_wc_condicoes() {
 	global $product;
-	if ( ! $product || ! $product->get_price() ) {
+	if ( ! $product || sg_wc_e_consulta( $product ) || ! $product->get_price() ) {
 		return;
 	}
-	$preco = (float) $product->get_price();
-	$pix   = sg_preco_pix( $preco );
-	$n     = sg_parcelas();
-	$parc  = $preco / $n;
-
-	echo '<small class="pdp__cond">';
-	printf(
-		/* translators: 1: preço no pix, 2: percentual, 3: parcelas, 4: valor da parcela */
-		esc_html__( '%1$s no Pix, com %2$s%% de desconto · ou %3$dx de %4$s sem juros', 'sao-geronimo' ),
-		esc_html( sg_preco_texto( $pix ) ),
-		esc_html( (float) sg_opt( 'pix_desconto', 5 ) ),
-		(int) $n,
-		esc_html( sg_preco_texto( $parc ) )
-	);
-	echo '</small>';
+	echo '<small class="pdp__cond" data-sg-cond>' . esc_html( sg_wc_cond_texto( (float) $product->get_price() ) ) . '</small>';
 }
 add_action( 'woocommerce_single_product_summary', 'sg_wc_condicoes', 11 );
 
 /**
- * Bloco de dimensões logo no começo da descrição.
+ * Cada variação leva o preço simples, a linha do Pix e a % de desconto,
+ * para o JS trocar sem nova consulta.
+ *
+ * @param array                $dados     Dados da variação.
+ * @param WC_Product           $pai       Produto variável.
+ * @param WC_Product_Variation $variacao  Variação.
+ * @return array
  */
-function sg_wc_dimensoes() {
-	global $product;
-	if ( ! $product ) {
-		return;
-	}
-
-	$txt = get_post_meta( $product->get_id(), '_sg_dimensoes', true );
-	if ( ! $txt && $product->has_dimensions() ) {
-		$txt = wc_format_dimensions( $product->get_dimensions( false ) );
-	}
-
-	$peso = $product->get_weight() ? wc_format_weight( $product->get_weight() ) : '';
-
-	if ( ! $txt && ! $peso ) {
-		return;
-	}
-
-	echo '<div class="medidas">' . sg_icone( 'regua', 20 ); // phpcs:ignore WordPress.Security.EscapeOutput
-	echo '<div><b>' . esc_html__( 'Dimensões', 'sao-geronimo' ) . '</b>';
-	echo '<span>' . esc_html( $txt ? $txt : __( 'sob consulta', 'sao-geronimo' ) ) . '</span>';
-	if ( $peso ) {
-		echo '<small>' . esc_html__( 'Peso:', 'sao-geronimo' ) . ' ' . esc_html( $peso ) . '</small>';
-	}
-	echo '</div></div>';
+function sg_wc_dados_variacao( $dados, $pai, $variacao ) {
+	$atual = (float) $dados['display_price'];
+	$dados['sg_cond'] = sg_wc_cond_texto( $atual );
+	$dados['sg_off']  = sg_wc_pct_off( (float) $dados['display_regular_price'], $atual );
+	return $dados;
 }
-add_action( 'woocommerce_single_product_summary', 'sg_wc_dimensoes', 19 );
+add_filter( 'woocommerce_available_variation', 'sg_wc_dados_variacao', 10, 3 );
 
 /**
- * Blocos extras (composição, modo de usar) na página do produto.
+ * Descrição curta: texto bem tipografado, com "ler mais" (feito no JS).
  */
-function sg_wc_blocos_extras() {
-	global $product;
-	if ( ! $product ) {
+function sg_wc_descricao_curta() {
+	global $post;
+	$curta = $post ? trim( (string) $post->post_excerpt ) : '';
+	if ( '' === $curta ) {
 		return;
 	}
-	$blocos = array(
-		__( 'Composição', 'sao-geronimo' ) => get_post_meta( $product->get_id(), '_sg_composicao', true ),
-		__( 'Modo de usar', 'sao-geronimo' ) => get_post_meta( $product->get_id(), '_sg_modo_usar', true ),
+	echo '<div class="pdp__curta" data-sg-curta><div class="pdp__curta-txt entry-content" id="pdp-curta">' . wp_kses_post( wpautop( wptexturize( $curta ) ) ) . '</div></div>';
+}
+remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
+add_action( 'woocommerce_single_product_summary', 'sg_wc_descricao_curta', 20 );
+
+/**
+ * Esgotado: avisa e oferece o WhatsApp para saber da reposição.
+ */
+function sg_wc_aviso_esgotado() {
+	global $product;
+	if ( ! $product || sg_wc_e_consulta( $product ) || $product->is_in_stock() ) {
+		return;
+	}
+	$msg = sprintf(
+		/* translators: 1: nome do produto, 2: SKU */
+		__( 'Olá! O produto %1$s (Ref. %2$s) está esgotado. Vocês têm previsão de reposição?', 'sao-geronimo' ),
+		$product->get_name(),
+		$product->get_sku()
 	);
-	foreach ( $blocos as $tit => $txt ) {
-		if ( ! trim( (string) $txt ) ) {
+	$url = sg_whatsapp_link( $msg );
+	echo '<div class="pdp__esgotado"><p class="pdp__esgotado-tit">' . esc_html__( 'Produto esgotado no momento', 'sao-geronimo' ) . '</p>';
+	if ( $url ) {
+		echo '<p>' . esc_html__( 'Fale com a gente para saber quando chega.', 'sao-geronimo' ) . '</p>';
+		echo '<a class="btn btn--azul" href="' . esc_url( $url ) . '" target="_blank" rel="noopener">' . esc_html__( 'Avisar-me pelo WhatsApp', 'sao-geronimo' ) . '</a>';
+	}
+	echo '</div>';
+}
+add_action( 'woocommerce_single_product_summary', 'sg_wc_aviso_esgotado', 31 );
+
+/* -------------------------------------------------------------------------
+ * Abas / seções abaixo do produto
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Meta de texto do produto.
+ *
+ * @param string $chave Meta.
+ * @return string
+ */
+function sg_wc_meta_txt( $chave ) {
+	global $product;
+	return $product ? trim( (string) get_post_meta( $product->get_id(), $chave, true ) ) : '';
+}
+
+/**
+ * Aba "Descrição": a longa; se ela não existe, a curta.
+ */
+function sg_wc_aba_descricao() {
+	global $post;
+	$longa = trim( (string) $post->post_content );
+	$txt   = '' !== $longa ? $longa : trim( (string) $post->post_excerpt );
+	echo '<div class="sg-texto entry-content">';
+	echo '' !== $longa ? apply_filters( 'the_content', $longa ) : wp_kses_post( wpautop( wptexturize( $txt ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput,WordPress.NamingConventions.PrefixAllGlobals
+	echo '</div>';
+}
+
+/**
+ * Linhas da ficha técnica (só as preenchidas).
+ *
+ * @param WC_Product $produto Produto.
+ * @return array Rótulo => HTML já escapado.
+ */
+function sg_wc_linhas_ficha( $produto ) {
+	$id    = $produto->get_id();
+	$meta  = function ( $k ) use ( $id ) {
+		return trim( (string) get_post_meta( $id, $k, true ) );
+	};
+	$dim   = $meta( '_sg_dimensoes' );
+	if ( '' === $dim && $produto->has_dimensions() ) {
+		$dim = wc_format_dimensions( $produto->get_dimensions( false ) );
+	}
+	$cats  = get_the_terms( $id, 'product_cat' );
+	$cat   = '';
+	if ( $cats && ! is_wp_error( $cats ) ) {
+		$links = array();
+		foreach ( $cats as $c ) {
+			$links[] = '<a href="' . esc_url( get_term_link( $c ) ) . '">' . esc_html( $c->name ) . '</a>';
+		}
+		$cat = implode( ', ', $links );
+	}
+	$linhas = array(
+		__( 'Marca', 'sao-geronimo' )              => esc_html( $meta( '_sg_marca' ) ),
+		__( 'Material', 'sao-geronimo' )           => esc_html( $meta( '_sg_material' ) ),
+		__( 'Conteúdo', 'sao-geronimo' )           => esc_html( $meta( '_sg_conteudo' ) ),
+		__( 'Dimensões', 'sao-geronimo' )          => esc_html( $dim ),
+		__( 'Peso', 'sao-geronimo' )               => $produto->has_weight() ? esc_html( wc_format_weight( $produto->get_weight() ) ) : '',
+		__( 'Código do fabricante', 'sao-geronimo' ) => esc_html( $meta( '_sg_cod_fabricante' ) ),
+		__( 'SKU', 'sao-geronimo' )                => esc_html( $produto->get_sku() ),
+		__( 'Categoria', 'sao-geronimo' )          => $cat,
+	);
+	// Atributos visíveis do produto (cor, aroma...) entram depois.
+	foreach ( $produto->get_attributes() as $attr ) {
+		if ( ! is_object( $attr ) || ! $attr->get_visible() ) {
 			continue;
 		}
-		echo '<div class="ficha"><h4>' . esc_html( $tit ) . '</h4>';
-		echo wp_kses_post( wpautop( $txt ) );
-		echo '</div>';
+		$val = $produto->get_attribute( $attr->get_name() );
+		if ( '' !== trim( (string) $val ) ) {
+			$linhas[ wc_attribute_label( $attr->get_name() ) ] = esc_html( $val );
+		}
+	}
+	return array_filter( $linhas, 'strlen' );
+}
+
+/**
+ * Aba "Ficha técnica".
+ */
+function sg_wc_aba_ficha() {
+	global $product;
+	echo '<table class="sg-ficha"><tbody>';
+	foreach ( sg_wc_linhas_ficha( $product ) as $rot => $val ) {
+		echo '<tr><th scope="row">' . esc_html( $rot ) . '</th><td>' . wp_kses_post( $val ) . '</td></tr>';
+	}
+	echo '</tbody></table>';
+}
+
+/**
+ * Abas de texto vindas das metas (composição, modo de usar).
+ *
+ * @param string $chave Meta.
+ */
+function sg_wc_aba_meta( $chave ) {
+	echo '<div class="sg-texto entry-content">' . wp_kses_post( wpautop( wptexturize( sg_wc_meta_txt( $chave ) ) ) ) . '</div>';
+}
+
+/**
+ * Reordena e renomeia as abas; esconde as vazias.
+ *
+ * @param array $abas Abas nativas.
+ * @return array
+ */
+function sg_wc_abas( $abas ) {
+	global $product, $post;
+	if ( ! $product || ! $post ) {
+		return $abas;
+	}
+	$novas = array();
+
+	if ( '' !== trim( (string) $post->post_content ) || '' !== trim( (string) $post->post_excerpt ) ) {
+		$novas['description'] = array(
+			'title'    => __( 'Descrição', 'sao-geronimo' ),
+			'priority' => 10,
+			'callback' => 'sg_wc_aba_descricao',
+		);
+	}
+	if ( sg_wc_linhas_ficha( $product ) ) {
+		$novas['ficha'] = array(
+			'title'    => __( 'Ficha técnica', 'sao-geronimo' ),
+			'priority' => 20,
+			'callback' => 'sg_wc_aba_ficha',
+		);
+	}
+	if ( '' !== sg_wc_meta_txt( '_sg_composicao' ) ) {
+		$novas['composicao'] = array(
+			'title'    => __( 'Composição', 'sao-geronimo' ),
+			'priority' => 30,
+			'callback' => function () {
+				sg_wc_aba_meta( '_sg_composicao' );
+			},
+		);
+	}
+	if ( '' !== sg_wc_meta_txt( '_sg_modo_usar' ) ) {
+		$novas['modo_usar'] = array(
+			'title'    => __( 'Modo de usar', 'sao-geronimo' ),
+			'priority' => 40,
+			'callback' => function () {
+				sg_wc_aba_meta( '_sg_modo_usar' );
+			},
+		);
+	}
+	if ( isset( $abas['reviews'] ) ) {
+		$n = (int) $product->get_review_count();
+		$novas['reviews'] = array(
+			'title'    => $n ? sprintf( __( 'Avaliações (%d)', 'sao-geronimo' ), $n ) : __( 'Avaliações', 'sao-geronimo' ),
+			'priority' => 50,
+			'callback' => $abas['reviews']['callback'],
+		);
+	}
+	return $novas;
+}
+add_filter( 'woocommerce_product_tabs', 'sg_wc_abas', 98 );
+
+/**
+ * JS da página do produto (variações em botões, abas, "ler mais", quantidade).
+ */
+function sg_wc_assets_produto() {
+	if ( function_exists( 'is_product' ) && is_product() ) {
+		wp_enqueue_script( 'sg-produto', SG_URL . '/assets/js/produto.js', array(), SG_VERSAO, true );
 	}
 }
-add_action( 'woocommerce_single_product_summary', 'sg_wc_blocos_extras', 41 );
+add_action( 'wp_enqueue_scripts', 'sg_wc_assets_produto', 30 );
 
 /**
  * Produto "sob consulta": esconde o preço e troca o botão.
@@ -378,12 +552,23 @@ add_filter( 'woocommerce_get_price_html', 'sg_wc_sob_consulta_preco', 10, 2 );
  * @return bool
  */
 function sg_wc_sob_consulta_compra( $pode, $product ) {
-	if ( 'yes' === get_post_meta( $product->get_id(), '_sg_sob_consulta', true ) ) {
+	if ( sg_wc_e_consulta( $product ) ) {
 		return false;
 	}
 	return $pode;
 }
 add_filter( 'woocommerce_is_purchasable', 'sg_wc_sob_consulta_compra', 10, 2 );
+add_filter( 'woocommerce_variation_is_purchasable', 'sg_wc_sob_consulta_compra', 10, 2 );
+
+/**
+ * Sob consulta: tira o formulário de compra da página.
+ */
+function sg_wc_sob_consulta_sem_form() {
+	if ( function_exists( 'is_product' ) && is_product() && sg_wc_e_consulta( get_the_ID() ) ) {
+		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+	}
+}
+add_action( 'wp', 'sg_wc_sob_consulta_sem_form' );
 
 /**
  * Botão de WhatsApp no lugar do "adicionar ao carrinho".
@@ -404,7 +589,8 @@ function sg_wc_botao_consulta() {
 		return;
 	}
 	printf(
-		'<div class="pdp__acoes"><a class="btn btn--azul" href="%s" target="_blank" rel="noopener" style="flex:1;min-width:240px">%s</a></div>',
+		'<div class="pdp__consulta"><p>%s</p><a class="btn btn--azul" href="%s" target="_blank" rel="noopener">%s</a></div>',
+		esc_html__( 'Este produto não tem preço na loja. Peça o valor pelo WhatsApp e responderemos rapidinho.', 'sao-geronimo' ),
 		esc_url( $url ),
 		esc_html__( 'Consultar pelo WhatsApp', 'sao-geronimo' )
 	);

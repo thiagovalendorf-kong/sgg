@@ -15,7 +15,7 @@ sg_migalhas();
 while ( have_posts() ) :
 	the_post();
 	?>
-	<section class="sec sec--curto" style="padding-top:8px"><div class="wrap">
+	<section class="sec sec--curto sec--topo-curto"><div class="wrap">
 		<article <?php post_class( 'pagina pagina--post' ); ?>>
 			<header class="pagina__cab">
 				<?php
@@ -25,14 +25,15 @@ while ( have_posts() ) :
 					<a class="eyebrow" href="<?php echo esc_url( get_category_link( $sg_cats[0] ) ); ?>"><?php echo esc_html( $sg_cats[0]->name ); ?></a>
 				<?php endif; ?>
 				<h1 class="h-sec"><?php the_title(); ?></h1>
-				<p class="pagina__meta texto-mudo">
-					<?php if ( 'nao' !== sg_opt( 'post_mostra_data', 'sim' ) ) : ?>
-						<?php echo esc_html( get_the_date() ); ?>
-					<?php endif; ?>
-					<?php if ( 'sim' === sg_opt( 'post_mostra_autor', 'sim' ) ) : ?>
-						<?php echo 'nao' !== sg_opt( 'post_mostra_data', 'sim' ) ? '&middot;' : ''; ?> <?php echo esc_html( get_the_author() ); ?>
-					<?php endif; ?>
-				</p>
+				<?php
+				// Data e autor só aparecem quando existem: nada de "·" solto.
+				$sg_data  = 'nao' !== sg_opt( 'post_mostra_data', 'sim' ) ? get_the_date() : '';
+				$sg_autor = 'sim' === sg_opt( 'post_mostra_autor', 'sim' ) ? get_the_author() : '';
+				$sg_meta  = array_filter( array( $sg_data, $sg_autor ) );
+				if ( $sg_meta ) :
+					?>
+					<p class="pagina__meta texto-mudo"><?php echo esc_html( implode( ' · ', $sg_meta ) ); ?></p>
+				<?php endif; ?>
 			</header>
 
 			<?php if ( has_post_thumbnail() ) : ?>
@@ -55,15 +56,24 @@ while ( have_posts() ) :
 			) );
 			if ( $sg_rel ) :
 				?>
-				<aside class="leia-tambem">
+				<aside class="posts-rel">
 					<h2><?php echo esc_html( sg_opt( 'post_relacionados_titulo', 'Leia também' ) ); ?></h2>
-					<div class="leia-tambem__grade">
+					<div class="posts-rel__grade">
 						<?php foreach ( $sg_rel as $sg_r ) : ?>
-							<a class="leia-tambem__item" href="<?php echo esc_url( get_permalink( $sg_r ) ); ?>">
-								<?php if ( has_post_thumbnail( $sg_r ) ) { echo get_the_post_thumbnail( $sg_r, 'medium', array( 'loading' => 'lazy' ) ); } // phpcs:ignore WordPress.Security.EscapeOutput ?>
-								<b><?php echo esc_html( get_the_title( $sg_r ) ); ?></b>
-								<span><?php echo esc_html( get_the_date( '', $sg_r ) ); ?></span>
-							</a>
+							<?php // Mesmo cartão do blog da home, inclusive o placeholder quando não há foto. ?>
+							<article class="post-card">
+								<a href="<?php echo esc_url( get_permalink( $sg_r ) ); ?>" class="post-card__img" tabindex="-1" aria-hidden="true">
+									<?php if ( has_post_thumbnail( $sg_r ) ) : ?>
+										<?php echo get_the_post_thumbnail( $sg_r, 'sg-card', array( 'loading' => 'lazy', 'alt' => '' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+									<?php else : ?>
+										<span class="post-card__ph"><?php echo sg_icone( 'estrela', 26 ); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+									<?php endif; ?>
+								</a>
+								<div class="post-card__corpo">
+									<h3><a href="<?php echo esc_url( get_permalink( $sg_r ) ); ?>"><?php echo esc_html( get_the_title( $sg_r ) ); ?></a></h3>
+									<span class="post-card__data"><?php echo esc_html( get_the_date( '', $sg_r ) ); ?></span>
+								</div>
+							</article>
 						<?php endforeach; ?>
 					</div>
 				</aside>
@@ -71,7 +81,9 @@ while ( have_posts() ) :
 			endif;
 		}
 		if ( comments_open() || get_comments_number() ) {
+			echo '<div class="comentarios">';
 			comments_template();
+			echo '</div>';
 		}
 		?>
 	</div></section>

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SG_VERSAO', '1.2.0' );
+define( 'SG_VERSAO', '1.3.0' );
 define( 'SG_DIR', get_template_directory() );
 define( 'SG_URL', get_template_directory_uri() );
 

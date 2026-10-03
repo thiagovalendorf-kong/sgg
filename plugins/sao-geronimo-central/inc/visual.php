@@ -40,7 +40,10 @@ add_action( 'admin_enqueue_scripts', 'sgcv_assets' );
  * @return string
  */
 function sgcv_body( $classes ) {
-	return $classes . ' sgcv sgcv-' . sgcv_modo() . ' ';
+	$tela = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	// O editor de blocos (Gutenberg) não leva a pele pesada: só menu e barra de cima seguem o tema.
+	$pleno = ! ( $tela && method_exists( $tela, 'is_block_editor' ) && $tela->is_block_editor() );
+	return $classes . ' sgcv sgcv-' . sgcv_modo() . ( $pleno ? ' sgcv-pleno' : '' ) . ' ';
 }
 add_filter( 'admin_body_class', 'sgcv_body' );
 
@@ -50,10 +53,15 @@ add_filter( 'admin_body_class', 'sgcv_body' );
  * @param WP_Admin_Bar $barra Barra.
  */
 function sgcv_botao( $barra ) {
+	// No site público o CSS e o JS do painel não carregam: sem botão morto.
+	if ( ! is_admin() ) {
+		return;
+	}
 	$barra->add_node( array(
 		'id'    => 'sgcv-modo',
 		'title' => '<span class="sgcv-sol">☀</span><span class="sgcv-lua">☾</span> <span class="sgcv-rotulo">Claro / Escuro</span>',
 		'href'  => '#',
+		'meta'  => array( 'title' => 'Trocar entre claro e escuro' ),
 	) );
 	$barra->remove_node( 'wp-logo' );
 	$barra->remove_node( 'comments' );

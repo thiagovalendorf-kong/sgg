@@ -85,7 +85,8 @@ add_action( 'widgets_init', 'sg_widgets' );
  * CSS e JS do site.
  */
 function sg_assets() {
-	$fontes = sg_opt( 'fonte_google', 'Inter:wght@300;400;500;600;700' );
+	// Única folha de fontes do site (o site.css não importa mais nada de fora).
+	$fontes = sg_opt( 'fonte_google', 'Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400' );
 	if ( $fontes ) {
 		wp_enqueue_style(
 			'sg-fontes',

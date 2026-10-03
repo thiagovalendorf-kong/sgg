@@ -85,7 +85,7 @@ function sgc_secoes() {
 
 		/* ---------------------------------------------------------- INÍCIO */
 		array(
-			'id' => 'banners', 'grupo' => 'Página inicial', 'icone' => '🖼️', 'titulo' => 'Banners',
+			'id' => 'banners', 'grupo' => 'Páginas', 'pagina' => 'Início', 'sub' => 'Banners', 'icone' => '🖼️', 'titulo' => 'Banners',
 			'desc' => 'As imagens grandes que passam no topo do site.', 'ver' => '/', 'ancora' => '.hero',
 			'campos' => array(
 				array( 'k' => 'banners', 't' => 'lista', 'l' => 'Seus banners', 'a' => 'Arraste para trocar a ordem. Imagem larga (ex.: 1920×700).', 'item' => 'Banner', 'sub' => array(
@@ -98,7 +98,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'frase', 'grupo' => 'Página inicial', 'icone' => '✍️', 'titulo' => 'Frase e botões',
+			'id' => 'frase', 'grupo' => 'Páginas', 'pagina' => 'Início', 'sub' => 'Frase e botões', 'icone' => '✍️', 'titulo' => 'Frase e botões',
 			'desc' => 'O texto de boas-vindas, os botões e os números de destaque.', 'ver' => '/', 'ancora' => '.hero__abaixo',
 			'campos' => array(
 				array( 'k' => 'hero_frase', 't' => 'html', 'l' => 'Frase principal', 'a' => 'Pode usar negrito e itálico.' ),
@@ -116,7 +116,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'busca', 'grupo' => 'Página inicial', 'icone' => '🔎', 'titulo' => 'Busca',
+			'id' => 'busca', 'grupo' => 'Páginas', 'pagina' => 'Início', 'sub' => 'Busca', 'icone' => '🔎', 'titulo' => 'Busca',
 			'desc' => 'A barra de busca da home e a gaveta de busca do topo.', 'ver' => '/', 'ancora' => '.busca-home',
 			'campos' => array(
 				array( 'k' => 'busca_home_texto', 't' => 'text', 'l' => 'Texto da barra na home', 'd' => 'O que você procura? Nome, orixá, aroma ou referência…' ),
@@ -126,12 +126,12 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'vitrines', 'grupo' => 'Página inicial', 'icone' => '🛍️', 'titulo' => 'Vitrines de produtos',
+			'id' => 'vitrines', 'grupo' => 'Páginas', 'pagina' => 'Início', 'sub' => 'Vitrines', 'icone' => '🛍️', 'titulo' => 'Vitrines de produtos',
 			'desc' => 'As fileiras de produtos que passam na home. Cada vitrine tem a sua aba.', 'ver' => '/', 'ancora' => '#sg-vitrine1',
 			'grupos' => $vitrines,
 		),
 		array(
-			'id' => 'categorias', 'grupo' => 'Página inicial', 'icone' => '🧭', 'titulo' => 'Categorias em destaque',
+			'id' => 'categorias', 'grupo' => 'Páginas', 'pagina' => 'Início', 'sub' => 'Categorias', 'icone' => '🧭', 'titulo' => 'Categorias em destaque',
 			'desc' => 'O carrossel de ícones de categorias.', 'ver' => '/', 'ancora' => '.cat-destaque',
 			'campos' => array(
 				array( 'k' => 'home_categorias_titulo', 't' => 'text', 'l' => 'Título', 'd' => 'Categorias em destaque' ),
@@ -141,7 +141,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'sobre', 'grupo' => 'Página inicial', 'icone' => '📖', 'titulo' => 'Sobre nós',
+			'id' => 'sobre', 'grupo' => 'Páginas', 'pagina' => 'Início', 'sub' => 'Sobre nós', 'icone' => '📖', 'titulo' => 'Sobre nós',
 			'desc' => 'A seção da história da loja.', 'ver' => '/', 'ancora' => '#sobre',
 			'campos' => array(
 				array( 'k' => 'sobre_eyebrow', 't' => 'text', 'l' => 'Palavrinha acima do título', 'd' => 'Quem somos' ),
@@ -149,13 +149,13 @@ function sgc_secoes() {
 				array( 'k' => 'sobre_texto', 't' => 'html', 'l' => 'Texto curto', 'a' => 'Linha em branco separa os parágrafos.' ),
 				array( 'k' => 'sobre_img', 't' => 'image', 'l' => 'Foto' ),
 				array( 'k' => 'sobre_img_alt', 't' => 'text', 'l' => 'Descrição da foto', 'd' => 'São Gerônimo Religiosos' ),
-				array( 'k' => 'sobre_cta', 't' => 'text', 'l' => 'Texto do botão "ler mais"', 'd' => 'LEIA MAIS' ),
+				array( 'k' => 'sobre_cta', 't' => 'text', 'l' => 'Texto do botão "ler mais"', 'd' => 'Leia mais' ),
 				array( 'k' => 'sobre_completo_titulo', 't' => 'text', 'l' => 'Título da história completa', 'd' => 'Nossa história' ),
 				array( 'k' => 'sobre_completo', 't' => 'html', 'l' => 'História completa (abre numa janelinha)' ),
 			),
 		),
 		array(
-			'id' => 'depoimentos', 'grupo' => 'Página inicial', 'icone' => '💬', 'titulo' => 'Depoimentos',
+			'id' => 'depoimentos', 'grupo' => 'Páginas', 'pagina' => 'Início', 'sub' => 'Depoimentos', 'icone' => '💬', 'titulo' => 'Depoimentos',
 			'desc' => 'O que os clientes dizem.', 'ver' => '/', 'ancora' => '.depo',
 			'campos' => array(
 				array( 'k' => 'depoimentos_titulo', 't' => 'text', 'l' => 'Título', 'd' => 'O que dizem de nós' ),
@@ -169,7 +169,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'diario', 'grupo' => 'Página inicial', 'icone' => '📰', 'titulo' => 'Diário (blog na home)',
+			'id' => 'diario', 'grupo' => 'Páginas', 'pagina' => 'Início', 'sub' => 'Diário', 'icone' => '📰', 'titulo' => 'Diário (blog na home)',
 			'desc' => 'As últimas novidades do blog que aparecem na home.', 'ver' => '/', 'ancora' => '.blog-home',
 			'campos' => array(
 				array( 'k' => 'home_blog_titulo', 't' => 'text', 'l' => 'Título', 'd' => 'Do nosso diário' ),
@@ -178,7 +178,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'ordem', 'grupo' => 'Página inicial', 'icone' => '↕️', 'titulo' => 'Ordem das seções',
+			'id' => 'ordem', 'grupo' => 'Páginas', 'pagina' => 'Início', 'sub' => 'Ordem das seções', 'icone' => '↕️', 'titulo' => 'Ordem das seções',
 			'desc' => 'Arraste para mudar a ordem da página inicial. O olhinho liga e desliga cada seção.', 'ver' => '/', 'ancora' => '',
 			'campos' => array(
 				array( 'k' => '_ordem', 't' => 'ordem', 'l' => 'Seções da página inicial' ),
@@ -187,7 +187,7 @@ function sgc_secoes() {
 
 		/* ------------------------------------------------------------ LOJA */
 		array(
-			'id' => 'loja', 'grupo' => 'Página da loja', 'icone' => '🏪', 'titulo' => 'Loja e categorias',
+			'id' => 'loja', 'grupo' => 'Páginas', 'pagina' => 'Loja e categorias', 'sub' => '', 'icone' => '🏪', 'titulo' => 'Loja e categorias',
 			'desc' => 'A página com todos os produtos, os filtros e as páginas de categoria.', 'ver' => 'loja', 'ancora' => '',
 			'grupos' => array(
 				'Capa e filtros' => array(
@@ -197,6 +197,7 @@ function sgc_secoes() {
 					array( 'k' => 'loja_filtro_categorias', 't' => 'toggle', 'l' => 'Filtro de categorias', 'd' => 'sim' ),
 					array( 'k' => 'loja_filtro_preco', 't' => 'toggle', 'l' => 'Filtro de preço', 'd' => 'sim' ),
 					array( 'k' => 'loja_filtro_linhas', 't' => 'toggle', 'l' => 'Filtro de linhas', 'd' => 'sim' ),
+					array( 'k' => 'loja_filtro_disponibilidade', 't' => 'toggle', 'l' => 'Filtro de disponibilidade (estoque e ofertas)', 'd' => 'sim' ),
 					array( 'k' => 'loja_colunas', 't' => 'number', 'l' => 'Produtos por linha', 'd' => 4, 'min' => 2, 'max' => 5 ),
 					array( 'k' => 'loja_por_pagina', 't' => 'number', 'l' => 'Produtos por página', 'd' => 24, 'min' => 4, 'max' => 96 ),
 				),
@@ -208,7 +209,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'produto', 'grupo' => 'Página do produto', 'icone' => '🏷️', 'titulo' => 'Página do produto',
+			'id' => 'produto', 'grupo' => 'Páginas', 'pagina' => 'Produto', 'sub' => '', 'icone' => '🏷️', 'titulo' => 'Página do produto',
 			'desc' => 'Parcelas, Pix, selos de confiança e produtos relacionados.', 'ver' => 'produto', 'ancora' => '',
 			'grupos' => array(
 				'Preço e parcelas' => array(
@@ -228,7 +229,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'post', 'grupo' => 'Posts do blog', 'icone' => '📝', 'titulo' => 'Post individual',
+			'id' => 'post', 'grupo' => 'Páginas', 'pagina' => 'Post do blog', 'sub' => '', 'icone' => '📝', 'titulo' => 'Post individual',
 			'desc' => 'Como cada texto do blog aparece.', 'ver' => 'post', 'ancora' => '',
 			'campos' => array(
 				array( 'k' => 'post_mostra_data', 't' => 'toggle', 'l' => 'Mostrar a data', 'd' => 'sim' ),
@@ -238,14 +239,14 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'carrinho', 'grupo' => 'Carrinho e checkout', 'icone' => '🛒', 'titulo' => 'Carrinho',
+			'id' => 'carrinho', 'grupo' => 'Páginas', 'pagina' => 'Carrinho', 'sub' => '', 'icone' => '🛒', 'titulo' => 'Carrinho',
 			'desc' => 'A página da sacola de compras.', 'ver' => 'carrinho', 'ancora' => '',
 			'campos' => array(
 				array( 'k' => 'frete_gratis_valor', 't' => 'number', 'l' => 'Frete grátis a partir de (R$)', 'd' => 0, 'min' => 0, 'max' => 99999, 'a' => 'Mostra uma barrinha "falta pouco para o frete grátis". 0 desliga. A regra de frete em si é configurada em Gestão → Pagamento e frete.' ),
 			),
 		),
 		array(
-			'id' => 'checkout', 'grupo' => 'Carrinho e checkout', 'icone' => '💳', 'titulo' => 'Finalizar compra',
+			'id' => 'checkout', 'grupo' => 'Páginas', 'pagina' => 'Finalizar compra', 'sub' => '', 'icone' => '💳', 'titulo' => 'Finalizar compra',
 			'desc' => 'A página de pagamento. Os campos e as formas de pagar vêm do WooCommerce e do Mercado Pago.', 'ver' => 'checkout', 'ancora' => '',
 			'campos' => array(
 				array( 'k' => 'checkout_aviso', 't' => 'text', 'l' => 'Aviso no topo (opcional)', 'p' => 'Pedidos até 15h saem no mesmo dia.' ),
@@ -254,21 +255,21 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'conta', 'grupo' => 'Minha conta', 'icone' => '🙋', 'titulo' => 'Área do cliente',
+			'id' => 'conta', 'grupo' => 'Páginas', 'pagina' => 'Minha conta', 'sub' => '', 'icone' => '🙋', 'titulo' => 'Área do cliente',
 			'desc' => 'A página onde o cliente vê pedidos, endereços e dados.', 'ver' => 'conta', 'ancora' => '',
 			'campos' => array(
 				array( 'k' => 'conta_boas_vindas', 't' => 'textarea', 'l' => 'Recado de boas-vindas (opcional)', 'p' => 'Aqui você acompanha seus pedidos e atualiza seus dados.' ),
 			),
 		),
 		array(
-			'id' => 'paginas', 'grupo' => 'Outras páginas', 'icone' => '📄', 'titulo' => 'Páginas comuns',
-			'desc' => 'Contato, trocas e devoluções, políticas… Os textos de cada página você edita em Gestão → Páginas.', 'ver' => '/', 'ancora' => '',
+			'id' => 'paginas', 'grupo' => 'Páginas', 'pagina' => 'Outras páginas', 'sub' => 'Páginas comuns', 'icone' => '📄', 'titulo' => 'Páginas comuns',
+			'desc' => 'Contato, trocas e devoluções, políticas… Os textos de cada página você edita em Gestão → Páginas.', 'ver' => 'pagina', 'ancora' => '',
 			'campos' => array(
 				array( 'k' => 'pagina_mostra_capa', 't' => 'toggle', 'l' => 'Mostrar a imagem de capa das páginas', 'd' => 'sim' ),
 			),
 		),
 		array(
-			'id' => 'erro404', 'grupo' => 'Outras páginas', 'icone' => '🧩', 'titulo' => 'Página não encontrada',
+			'id' => 'erro404', 'grupo' => 'Páginas', 'pagina' => 'Outras páginas', 'sub' => 'Página não encontrada', 'icone' => '🧩', 'titulo' => 'Página não encontrada',
 			'desc' => 'O que aparece quando o endereço não existe.', 'ver' => '/pagina-que-nao-existe-sgc/', 'ancora' => '',
 			'campos' => array(
 				array( 'k' => 'texto_404_titulo', 't' => 'text', 'l' => 'Título', 'd' => 'Esta página não existe mais.' ),
@@ -276,8 +277,8 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'contato', 'grupo' => 'Atendimento', 'icone' => '📞', 'titulo' => 'Contato e WhatsApp',
-			'desc' => 'Telefone, e-mail, endereço e o botão flutuante do WhatsApp.', 'ver' => '/', 'ancora' => '.rodape',
+			'id' => 'contato', 'grupo' => 'Páginas', 'pagina' => 'Contato e WhatsApp', 'sub' => '', 'icone' => '📞', 'titulo' => 'Contato e WhatsApp',
+			'desc' => 'Telefone, e-mail, endereço e o botão flutuante do WhatsApp.', 'ver' => 'pagina', 'ancora' => '.rodape',
 			'campos' => array(
 				array( 'k' => 'whatsapp', 't' => 'text', 'l' => 'WhatsApp (com DDD)', 'a' => 'Só números, com 55 na frente.', 'p' => '5548999999999', 'd' => '5548996397562' ),
 				array( 'k' => 'whatsapp_exibido', 't' => 'text', 'l' => 'Como o número aparece escrito', 'p' => '(48) 99999-9999' ),
@@ -291,7 +292,7 @@ function sgc_secoes() {
 
 		/* ---------------------------------------------------------- VISUAL */
 		array(
-			'id' => 'cores', 'grupo' => 'Visual do site', 'icone' => '🎨', 'titulo' => 'Cores',
+			'id' => 'cores', 'grupo' => 'Visual do site', 'pagina' => '', 'sub' => 'Cores', 'icone' => '🎨', 'titulo' => 'Cores',
 			'desc' => 'Mude uma cor e o site inteiro acompanha.', 'ver' => '/', 'ancora' => '',
 			'campos' => array(
 				array( 'k' => 'cor_primaria', 't' => 'color', 'l' => 'Cor principal (botões e links)', 'd' => '#1E40AF' ),
@@ -303,7 +304,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'logo', 'grupo' => 'Visual do site', 'icone' => '🔤', 'titulo' => 'Logo, letras e formato',
+			'id' => 'logo', 'grupo' => 'Visual do site', 'pagina' => '', 'sub' => 'Logo, letras e formato', 'icone' => '🔤', 'titulo' => 'Logo, letras e formato',
 			'desc' => 'Logotipo, fontes e jeito dos cantos.', 'ver' => '/', 'ancora' => '',
 			'campos' => array(
 				array( 'k' => 'logo_img', 't' => 'image', 'l' => 'Logotipo (imagem)', 'a' => 'Sem imagem, o site usa o nome em texto.' ),
@@ -317,7 +318,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'topo', 'grupo' => 'Visual do site', 'icone' => '📢', 'titulo' => 'Aviso do topo',
+			'id' => 'topo', 'grupo' => 'Visual do site', 'pagina' => '', 'sub' => 'Aviso do topo', 'icone' => '📢', 'titulo' => 'Aviso do topo',
 			'desc' => 'A faixinha de aviso acima do menu.', 'ver' => '/', 'ancora' => '.faixa-topo',
 			'campos' => array(
 				array( 'k' => 'faixa_topo_ativa', 't' => 'toggle', 'l' => 'Mostrar o aviso', 'd' => 'sim' ),
@@ -326,13 +327,13 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'rodape', 'grupo' => 'Visual do site', 'icone' => '🦶', 'titulo' => 'Rodapé',
-			'desc' => 'A faixa de redes sociais e o rodapé do site.', 'ver' => '/', 'ancora' => '.rodape',
+			'id' => 'rodape', 'grupo' => 'Visual do site', 'pagina' => '', 'sub' => 'Rodapé', 'icone' => '🦶', 'titulo' => 'Rodapé',
+			'desc' => 'A faixa de redes sociais e o rodapé do site.', 'ver' => 'pagina', 'ancora' => '.rodape',
 			'grupos' => array(
 				'Faixa de redes' => array(
 					array( 'k' => 'faixa_social_ativa', 't' => 'toggle', 'l' => 'Mostrar a faixa de WhatsApp e Instagram', 'd' => 'sim' ),
-					array( 'k' => 'faixa_social_titulo', 't' => 'text', 'l' => 'Título', 'd' => 'Fale com a gente ou acompanhe as novidades' ),
-					array( 'k' => 'faixa_social_sub', 't' => 'text', 'l' => 'Frase', 'd' => 'Atendimento rápido no WhatsApp e lançamentos em primeira mão no Instagram.' ),
+					array( 'k' => 'faixa_social_titulo', 't' => 'textarea', 'l' => 'Título', 'd' => 'Fale com a gente ou acompanhe as novidades' ),
+					array( 'k' => 'faixa_social_sub', 't' => 'textarea', 'l' => 'Frase', 'd' => 'Atendimento rápido no WhatsApp e lançamentos em primeira mão no Instagram.' ),
 					array( 'k' => 'url_instagram', 't' => 'url', 'l' => 'Link do Instagram' ),
 					array( 'k' => 'instagram_arroba', 't' => 'text', 'l' => '@ do Instagram' ),
 					array( 'k' => 'url_facebook', 't' => 'url', 'l' => 'Link do Facebook' ),
@@ -349,7 +350,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'avancado', 'grupo' => 'Visual do site', 'icone' => '🛠️', 'titulo' => 'Avançado',
+			'id' => 'avancado', 'grupo' => 'Visual do site', 'pagina' => '', 'sub' => 'Avançado', 'icone' => '🛠️', 'titulo' => 'Avançado',
 			'desc' => 'Para quem sabe CSS. Se não sabe, pode ignorar.', 'ver' => '/', 'ancora' => '',
 			'campos' => array(
 				array( 'k' => 'css_extra', 't' => 'css', 'l' => 'CSS extra', 'a' => 'Entra no site inteiro.' ),
@@ -376,4 +377,55 @@ function sgc_todos_campos() {
 		}
 	}
 	return $out;
+}
+
+/**
+ * Árvore da navegação da Central: grupo > item (> sub-itens).
+ * Usa as chaves 'grupo', 'pagina' e 'sub' de cada seção; nenhum campo é duplicado.
+ *
+ * @return array Lista de grupos: array( slug, nome, itens => array( array( chave, rotulo, icone, id|filhos ) ) ).
+ */
+function sgc_navegacao() {
+	$ordem = array( 'Início', 'Loja e categorias', 'Produto', 'Post do blog', 'Carrinho', 'Finalizar compra', 'Minha conta', 'Contato e WhatsApp', 'Outras páginas' );
+	$icone = array( 'Início' => '🏠', 'Outras páginas' => '📄' );
+	$grupos = array(
+		'paginas' => array( 'slug' => 'paginas', 'nome' => 'Páginas', 'itens' => array() ),
+		'visual'  => array( 'slug' => 'visual', 'nome' => 'Visual do site', 'itens' => array() ),
+	);
+
+	// Páginas: agrupa por 'pagina' e ordena pela lista fixa acima.
+	$paginas = array();
+	foreach ( sgc_secoes() as $s ) {
+		if ( 'Páginas' !== $s['grupo'] ) {
+			continue;
+		}
+		$p = $s['pagina'];
+		if ( ! isset( $paginas[ $p ] ) ) {
+			$paginas[ $p ] = array(
+				'chave'  => sanitize_title( $p ),
+				'rotulo' => $p,
+				'icone'  => isset( $icone[ $p ] ) ? $icone[ $p ] : $s['icone'],
+				'filhos' => array(),
+			);
+		}
+		$paginas[ $p ]['filhos'][] = array( 'id' => $s['id'], 'rotulo' => '' !== $s['sub'] ? $s['sub'] : $s['pagina'], 'icone' => $s['icone'] );
+	}
+	foreach ( $ordem as $p ) {
+		if ( ! isset( $paginas[ $p ] ) ) {
+			continue;
+		}
+		$item = $paginas[ $p ];
+		if ( 1 === count( $item['filhos'] ) ) {
+			$item['id'] = $item['filhos'][0]['id'];
+			unset( $item['filhos'] );
+		}
+		$grupos['paginas']['itens'][] = $item;
+	}
+
+	foreach ( sgc_secoes() as $s ) {
+		if ( 'Visual do site' === $s['grupo'] ) {
+			$grupos['visual']['itens'][] = array( 'chave' => $s['id'], 'rotulo' => $s['sub'], 'icone' => $s['icone'], 'id' => $s['id'] );
+		}
+	}
+	return array_values( $grupos );
 }

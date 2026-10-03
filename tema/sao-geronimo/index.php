@@ -13,7 +13,7 @@ get_header();
 sg_migalhas();
 ?>
 
-<section class="sec sec--curto" style="padding-top:8px"><div class="wrap">
+<section class="sec sec--curto sec--topo-curto"><div class="wrap">
 	<div class="sec__cab">
 		<div>
 			<h1 class="h-sec">

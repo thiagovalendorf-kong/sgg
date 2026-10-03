@@ -86,7 +86,8 @@ function sgc_aplicar_brasil() {
 	);
 	$mudou = array();
 	foreach ( $ops as $k => $v ) {
-		if ( get_option( $k ) !== $v ) {
+		$atual = get_option( $k );
+		if ( is_array( $v ) ? $atual !== $v : (string) $atual !== (string) $v ) {
 			update_option( $k, $v );
 			$mudou[] = $k;
 		}
@@ -124,8 +125,8 @@ function sgc_acao_brasil() {
 		wp_die( 'Sem permissão.' );
 	}
 	check_admin_referer( 'sgc_brasil' );
-	sgc_aplicar_brasil();
-	wp_safe_redirect( admin_url( 'admin.php?page=sgc-integracoes&feito=brasil' ) );
+	$mudou = sgc_aplicar_brasil();
+	wp_safe_redirect( admin_url( 'admin.php?page=sgc-integracoes&feito=brasil&n=' . count( $mudou ) ) );
 	exit;
 }
 add_action( 'admin_post_sgc_brasil', 'sgc_acao_brasil' );
@@ -145,7 +146,7 @@ function sgc_pagina_integracoes() {
 		<p class="sgc-loja__sub">Deixe a loja pronta para vender: moeda, Mercado Pago, Correios e transportadoras.</p>
 
 		<?php if ( isset( $_GET['feito'] ) ) : // phpcs:ignore WordPress.Security.NonceVerification ?>
-			<div class="sgc-ok">✅ Pronto! A loja agora está em Real (R$), com endereço e medidas do Brasil.</div>
+			<div class="sgc-ok">✅ Pronto! A loja agora está em Real (R$), com endereço e medidas do Brasil.<?php echo isset( $_GET['n'] ) ? ' (' . (int) $_GET['n'] . ' ajuste(s) feito(s).)' : ''; // phpcs:ignore WordPress.Security.NonceVerification ?></div>
 		<?php endif; ?>
 
 		<h2 class="sgc-loja__tit">1. Loja no padrão Brasil</h2>
@@ -158,7 +159,7 @@ function sgc_pagina_integracoes() {
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="sgc_brasil">
 				<?php wp_nonce_field( 'sgc_brasil' ); ?>
-				<button type="submit" class="sgc-bt sgc-bt--principal">Aplicar padrão Brasil</button>
+				<button type="submit" class="sgc-bt sgc-bt--principal" onclick="return confirm('Aplicar o padrão Brasil? A loja passará a vender só para o Brasil e os links do site serão trocados.');">Aplicar padrão Brasil</button>
 				<span class="sgc-nota">Define Real (R$ 1.234,56), Brasil como único país, kg e cm, fuso de São Paulo e links bonitos.</span>
 			</form>
 		</div>

@@ -134,3 +134,19 @@ function sg_conta_boas_vindas() {
 	}
 }
 add_action( 'woocommerce_account_dashboard', 'sg_conta_boas_vindas', 5 );
+
+/**
+ * Esconde "Downloads" da conta quando o cliente não tem arquivos para baixar.
+ *
+ * @param array $itens Itens do menu.
+ * @return array
+ */
+function sg_conta_menu_sem_downloads( $itens ) {
+	if ( isset( $itens['downloads'] ) && function_exists( 'WC' ) && is_user_logged_in() && function_exists( 'wc_get_customer_available_downloads' ) ) {
+		if ( ! wc_get_customer_available_downloads( get_current_user_id() ) ) {
+			unset( $itens['downloads'] );
+		}
+	}
+	return $itens;
+}
+add_filter( 'woocommerce_account_menu_items', 'sg_conta_menu_sem_downloads', 20 );

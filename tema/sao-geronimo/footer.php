@@ -12,7 +12,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 $sg_colado  = is_front_page() ? ' rodape--colado' : '';
 $sg_insta   = sg_opt( 'url_instagram' );
 $sg_arroba  = sg_opt( 'instagram_arroba' );
-$sg_zap_num = sg_opt( 'whatsapp_exibido', sg_opt( 'telefone' ) );
+// Número que aparece escrito: o digitado no painel ou, na falta dele, o do WhatsApp já formatado.
+$sg_zap_num = sg_opt( 'whatsapp_exibido' );
+if ( ! $sg_zap_num ) {
+	$sg_zap_num = sg_opt( 'telefone' );
+}
+$sg_zap_num = sg_formata_fone( $sg_zap_num ? $sg_zap_num : sg_opt( 'whatsapp' ) );
 $sg_zap_url = sg_whatsapp_link( sg_opt( 'whatsapp_msg', 'Olá! Vim pelo site da São Gerônimo.' ) );
 ?>
 </main>
@@ -30,7 +35,7 @@ $sg_zap_url = sg_whatsapp_link( sg_opt( 'whatsapp_msg', 'Olá! Vim pelo site da 
 							<?php echo sg_icone( 'whatsapp', 22 ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 							<span class="btn-social__txt">
 								<small><?php esc_html_e( 'Chamar no WhatsApp', 'sao-geronimo' ); ?></small>
-								<b><?php echo esc_html( $sg_zap_num ? $sg_zap_num : sg_opt( 'whatsapp' ) ); ?></b>
+								<b><?php echo esc_html( $sg_zap_num ); ?></b>
 							</span>
 						</a>
 					<?php endif; ?>
@@ -51,10 +56,10 @@ $sg_zap_url = sg_whatsapp_link( sg_opt( 'whatsapp_msg', 'Olá! Vim pelo site da 
 	<div class="wrap rodape__g">
 		<div>
 			<div class="rodape__marca"><?php echo esc_html( sg_opt( 'logo_texto', get_bloginfo( 'name' ) ) ); ?></div>
-			<p style="margin-top:24px;max-width:34ch"><?php echo esc_html( sg_opt( 'rodape_sobre', 'Há mais de 15 anos trazendo para a sua vida a espiritualidade em cada detalhe.' ) ); ?></p>
+			<p class="rodape__sobre"><?php echo esc_html( sg_opt( 'rodape_sobre', 'Há mais de 15 anos trazendo para a sua vida a espiritualidade em cada detalhe.' ) ); ?></p>
 			<?php sg_redes(); ?>
 			<?php if ( $sg_insta ) : ?>
-				<a href="<?php echo esc_url( $sg_insta ); ?>" target="_blank" rel="noopener" class="link-sub" style="margin-top:20px;color:var(--primary)"><?php esc_html_e( 'Seguir no Instagram', 'sao-geronimo' ); ?></a>
+				<a href="<?php echo esc_url( $sg_insta ); ?>" target="_blank" rel="noopener" class="link-sub rodape__insta"><?php esc_html_e( 'Seguir no Instagram', 'sao-geronimo' ); ?></a>
 			<?php endif; ?>
 		</div>
 

@@ -68,12 +68,42 @@ function sg_destaca( $nome, $termos ) {
 }
 
 /**
+ * Versão do cache da busca: sobe quando um produto muda, e as respostas antigas
+ * simplesmente deixam de ser usadas (sem varrer a tabela de opções).
+ *
+ * @return int
+ */
+function sg_busca_versao() {
+	return (int) get_option( 'sg_busca_ver', 1 );
+}
+
+/**
+ * Limite simples por visitante: no máximo 40 pedidos por minuto.
+ * Conta só no cache de objeto quando existe; sem ele, usa um transient curto por IP.
+ *
+ * @return bool true se pode seguir.
+ */
+function sg_busca_pode() {
+	$ip    = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '0';
+	$chave = 'sg_rl_' . md5( $ip );
+	$n     = (int) get_transient( $chave );
+	if ( $n >= 40 ) {
+		return false;
+	}
+	set_transient( $chave, $n + 1, MINUTE_IN_SECONDS );
+	return true;
+}
+
+/**
  * Responde à busca ao vivo.
+ *
+ * Os dados são públicos e a rota só lê, então ela não exige nonce: o nonce de um
+ * visitante anônimo é igual para todos e, em página com cache, vence e devolve 403.
+ * A proteção contra abuso é o limite de tamanho do termo e o limite por IP.
  */
 function sg_ajax_busca() {
-	check_ajax_referer( 'sg_front', 'nonce' );
-
-	$q = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : '';
+	$q = isset( $_GET['q'] ) ? sanitize_text_field( wp_unslash( $_GET['q'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+	$q = mb_substr( trim( $q ), 0, 60 );
 	if ( mb_strlen( $q ) < 2 ) {
 		wp_send_json_success( array( 'itens' => array(), 'total' => 0 ) );
 	}
@@ -82,11 +112,21 @@ function sg_ajax_busca() {
 		wp_send_json_success( array( 'itens' => array(), 'total' => 0 ) );
 	}
 
+	if ( ! sg_busca_pode() ) {
+		wp_send_json_error( array( 'msg' => 'muitas buscas' ), 429 );
+	}
+
 	$limite = max( 3, min( 12, (int) sg_opt( 'busca_sugestoes', 7 ) ) );
-	$chave  = 'sg_busca_' . md5( $q . '|' . $limite . '|' . get_locale() );
-	$cache  = get_transient( $chave );
-	if ( false !== $cache ) {
-		wp_send_json_success( $cache );
+	$chave  = 'sg_busca_' . md5( $q . '|' . $limite . '|' . get_locale() . '|' . sg_busca_versao() );
+
+	// Só guarda resposta quando existe cache de objeto de verdade (Redis, Memcached);
+	// sem ele cada termo novo viraria uma linha na tabela de opções.
+	$guarda = wp_using_ext_object_cache();
+	if ( $guarda ) {
+		$cache = get_transient( $chave );
+		if ( false !== $cache ) {
+			wp_send_json_success( $cache );
+		}
 	}
 
 	// Busca por nome/descrição e, em paralelo, por SKU.
@@ -140,7 +180,9 @@ function sg_ajax_busca() {
 	}
 
 	$dados = array( 'itens' => $itens, 'total' => $total );
-	set_transient( $chave, $dados, 10 * MINUTE_IN_SECONDS );
+	if ( $guarda ) {
+		set_transient( $chave, $dados, 10 * MINUTE_IN_SECONDS );
+	}
 
 	wp_send_json_success( $dados );
 }
@@ -156,8 +198,7 @@ function sg_limpa_cache_busca( $id ) {
 	if ( 'product' !== get_post_type( $id ) ) {
 		return;
 	}
-	global $wpdb;
-	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_sg_busca_%' OR option_name LIKE '_transient_timeout_sg_busca_%'" ); // phpcs:ignore WordPress.DB
+	update_option( 'sg_busca_ver', sg_busca_versao() + 1, false );
 }
 add_action( 'save_post', 'sg_limpa_cache_busca' );
 add_action( 'woocommerce_update_product', 'sg_limpa_cache_busca' );

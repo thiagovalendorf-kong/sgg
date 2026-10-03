@@ -126,6 +126,31 @@ function sg_whatsapp_link( $msg = '' ) {
 }
 
 /**
+ * Formata um telefone brasileiro para exibir: 5548996397562 vira (48) 99639-7562.
+ *
+ * Se o texto já vier formatado (tem parênteses, espaços, hífen), devolve como está.
+ *
+ * @param string $fone Número cru ou já formatado.
+ * @return string
+ */
+function sg_formata_fone( $fone ) {
+	$fone = trim( (string) $fone );
+	if ( '' === $fone || preg_match( '/\D/', $fone ) ) {
+		return $fone;
+	}
+	if ( 0 === strpos( $fone, '55' ) && strlen( $fone ) > 11 ) {
+		$fone = substr( $fone, 2 );
+	}
+	if ( 11 === strlen( $fone ) ) {
+		return sprintf( '(%s) %s-%s', substr( $fone, 0, 2 ), substr( $fone, 2, 5 ), substr( $fone, 7 ) );
+	}
+	if ( 10 === strlen( $fone ) ) {
+		return sprintf( '(%s) %s-%s', substr( $fone, 0, 2 ), substr( $fone, 2, 4 ), substr( $fone, 6 ) );
+	}
+	return $fone;
+}
+
+/**
  * Painel de busca que desce do cabeçalho (o mesmo do site estático).
  */
 function sg_painel_busca() {
@@ -210,6 +235,9 @@ function sg_migalhas() {
 		$itens[] = array( __( 'Busca', 'sao-geronimo' ), '' );
 	} elseif ( is_singular() || is_page() ) {
 		$itens[] = array( get_the_title(), '' );
+	} elseif ( function_exists( 'is_shop' ) && is_shop() ) {
+		$loja    = wc_get_page_id( 'shop' );
+		$itens[] = array( $loja > 0 ? get_the_title( $loja ) : __( 'Loja', 'sao-geronimo' ), '' );
 	} elseif ( is_archive() ) {
 		$itens[] = array( get_the_archive_title(), '' );
 	}
@@ -299,3 +327,39 @@ function sg_rodape_padrao() {
 	}
 	echo '</ul>';
 }
+
+/**
+ * Títulos de arquivo sem prefixo em inglês ("Archives:") nem "Categoria:".
+ *
+ * @param string $titulo Título original.
+ * @return string
+ */
+function sg_titulo_arquivo( $titulo ) {
+	if ( is_post_type_archive() ) {
+		return post_type_archive_title( '', false );
+	}
+	if ( is_category() || is_tag() || is_tax() ) {
+		return single_term_title( '', false );
+	}
+	if ( is_author() ) {
+		return get_the_author();
+	}
+	return $titulo;
+}
+add_filter( 'get_the_archive_title', 'sg_titulo_arquivo' );
+
+/**
+ * Formulário de comentários com textos em português do Brasil.
+ *
+ * @param array $args Argumentos padrão.
+ * @return array
+ */
+function sg_comentarios_textos( $args ) {
+	$args['title_reply']          = __( 'Deixe um comentário', 'sao-geronimo' );
+	$args['title_reply_to']       = __( 'Responder a %s', 'sao-geronimo' );
+	$args['cancel_reply_link']    = __( 'Cancelar resposta', 'sao-geronimo' );
+	$args['label_submit']         = __( 'Enviar comentário', 'sao-geronimo' );
+	$args['comment_notes_before'] = '<p class="comment-notes">' . esc_html__( 'Seu e-mail não será publicado.', 'sao-geronimo' ) . '</p>';
+	return $args;
+}
+add_filter( 'comment_form_defaults', 'sg_comentarios_textos' );

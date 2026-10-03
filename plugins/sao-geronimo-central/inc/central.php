@@ -29,6 +29,11 @@ function sgc_url_previa( $ver ) {
 			$p   = get_posts( array( 'numberposts' => 1, 'post_status' => 'publish', 'fields' => 'ids' ) );
 			$url = $p ? get_permalink( $p[0] ) : home_url( '/' );
 			break;
+		case 'pagina':
+			// Primeira página comum publicada (exemplo para ver capa e rodapé).
+			$p   = get_posts( array( 'post_type' => 'page', 'numberposts' => 1, 'post_status' => 'publish', 'fields' => 'ids', 'orderby' => 'menu_order title', 'order' => 'ASC', 'exclude' => array( (int) get_option( 'page_on_front' ) ) ) );
+			$url = $p ? get_permalink( $p[0] ) : home_url( '/' );
+			break;
 		case 'carrinho':
 			$url = $woo ? wc_get_cart_url() : home_url( '/' );
 			break;
@@ -103,14 +108,52 @@ function sgc_assets( $gancho ) {
 add_action( 'admin_enqueue_scripts', 'sgc_assets' );
 
 /**
+ * Trilha (breadcrumb) de uma seção: Páginas › Início › Banners.
+ * Cada passo leva à primeira seção daquele nível.
+ *
+ * @param array $s Seção.
+ * @return array Lista de array( rotulo, id ).
+ */
+function sgc_trilha( $s ) {
+	$todas = sgc_secoes();
+	$achar = function ( $campo, $valor, $grupo ) use ( $todas ) {
+		foreach ( $todas as $o ) {
+			if ( $o['grupo'] === $grupo && ( 'grupo' === $campo || $o[ $campo ] === $valor ) ) {
+				return $o['id'];
+			}
+		}
+		return '';
+	};
+	$t = array( array( 'rotulo' => $s['grupo'], 'id' => $achar( 'grupo', '', $s['grupo'] ) ) );
+	if ( '' !== $s['pagina'] ) {
+		$t[] = array( 'rotulo' => $s['pagina'], 'id' => $achar( 'pagina', $s['pagina'], $s['grupo'] ) );
+	}
+	if ( '' !== $s['sub'] && $s['sub'] !== $s['pagina'] ) {
+		$t[] = array( 'rotulo' => $s['sub'], 'id' => $s['id'] );
+	}
+	return $t;
+}
+
+/**
  * Desenha a Central.
  */
 function sgc_pagina() {
 	$base    = array_merge( sgc_publicado(), sgc_rascunho() );
 	$secoes  = sgc_secoes();
-	$grupos  = array();
+	$nav     = sgc_navegacao();
+	$gestao  = array(
+		array( admin_url( 'admin.php?page=sgc-loja' ), 'Produtos, pedidos e clientes', '📦' ),
+		array( admin_url( 'admin.php?page=sgc-integracoes' ), 'Pagamento e frete', '🔌' ),
+	);
+	// Opções do seletor "Ir para…": todas as seções + atalhos de gestão.
+	$opcoes = array();
 	foreach ( $secoes as $s ) {
-		$grupos[ $s['grupo'] ][] = $s;
+		$trilha   = sgc_trilha( $s );
+		$rot      = implode( ' › ', wp_list_pluck( $trilha, 'rotulo' ) );
+		$opcoes[] = array( 'id' => $s['id'], 'url' => '', 'rot' => $rot, 'txt' => $rot . ' ' . $s['titulo'] . ' ' . $s['desc'] );
+	}
+	foreach ( $gestao as $g ) {
+		$opcoes[] = array( 'id' => '', 'url' => $g[0], 'rot' => 'Gestão › ' . $g[1], 'txt' => 'Gestão ' . $g[1] );
 	}
 	$mudancas = count( sgc_rascunho() );
 	$primeira = $secoes[0]['id'];
@@ -119,8 +162,8 @@ function sgc_pagina() {
 
 		<header class="sgc-topo">
 			<div class="sgc-topo__marca"><span class="sgc-topo__ponto"></span><b>Meu Site</b></div>
-			<div class="sgc-topo__status" data-status data-mudancas="<?php echo (int) $mudancas; ?>">
-				<?php echo $mudancas ? 'Você tem alterações que ainda não foram publicadas.' : 'Tudo publicado.'; ?>
+			<div class="sgc-topo__status<?php echo $mudancas ? ' sujo' : ''; ?>" data-status data-mudancas="<?php echo (int) $mudancas; ?>" role="status" aria-live="polite">
+				<span class="sgc-st-lg"><?php echo $mudancas ? 'Você tem alterações que ainda não foram publicadas.' : 'Tudo publicado.'; ?></span><span class="sgc-st-cr"><?php echo $mudancas ? 'Não publicado' : 'Publicado'; ?></span>
 			</div>
 			<div class="sgc-topo__acoes">
 				<button type="button" class="sgc-bt sgc-bt--fantasma sgc-so-celular" data-previa-alterna>👁 Prévia</button>
@@ -132,29 +175,79 @@ function sgc_pagina() {
 
 		<div class="sgc-corpo">
 
-			<nav class="sgc-nav" aria-label="Assuntos do site">
-				<?php foreach ( $grupos as $nome => $itens ) : ?>
-					<div class="sgc-nav__grupo">
-						<p><?php echo esc_html( $nome ); ?></p>
-						<?php foreach ( $itens as $s ) : ?>
-							<button type="button" class="sgc-nav__item" data-ir="<?php echo esc_attr( $s['id'] ); ?>">
-								<span class="sgc-nav__ico"><?php echo esc_html( $s['icone'] ); ?></span>
-								<span><?php echo esc_html( $s['titulo'] ); ?></span>
-							</button>
-						<?php endforeach; ?>
+			<nav class="sgc-nav" aria-label="Assuntos do site" data-nav>
+				<?php foreach ( $nav as $g ) : ?>
+					<div class="sgc-nav__grupo" data-no="g-<?php echo esc_attr( $g['slug'] ); ?>">
+						<button type="button" class="sgc-nav__gt" aria-expanded="true" aria-controls="sgc-nav-g-<?php echo esc_attr( $g['slug'] ); ?>" data-alterna>
+							<span><?php echo esc_html( $g['nome'] ); ?></span><i class="sgc-seta" aria-hidden="true"></i>
+						</button>
+						<div class="sgc-nav__lista" id="sgc-nav-g-<?php echo esc_attr( $g['slug'] ); ?>">
+							<?php foreach ( $g['itens'] as $it ) : ?>
+								<?php if ( isset( $it['filhos'] ) ) : ?>
+									<div class="sgc-nav__no" data-no="i-<?php echo esc_attr( $it['chave'] ); ?>">
+										<button type="button" class="sgc-nav__item sgc-nav__pai" aria-expanded="false" aria-controls="sgc-nav-i-<?php echo esc_attr( $it['chave'] ); ?>" data-alterna>
+											<span class="sgc-nav__ico"><?php echo esc_html( $it['icone'] ); ?></span>
+											<span class="sgc-nav__txt"><?php echo esc_html( $it['rotulo'] ); ?></span>
+											<em class="sgc-nav__qtd"><?php echo (int) count( $it['filhos'] ); ?></em>
+											<i class="sgc-seta" aria-hidden="true"></i>
+										</button>
+										<div class="sgc-nav__filhos" id="sgc-nav-i-<?php echo esc_attr( $it['chave'] ); ?>" hidden>
+											<?php foreach ( $it['filhos'] as $f ) : ?>
+												<button type="button" class="sgc-nav__item sgc-nav__sub" data-ir="<?php echo esc_attr( $f['id'] ); ?>"><span><?php echo esc_html( $f['rotulo'] ); ?></span></button>
+											<?php endforeach; ?>
+										</div>
+									</div>
+								<?php else : ?>
+									<button type="button" class="sgc-nav__item" data-ir="<?php echo esc_attr( $it['id'] ); ?>">
+										<span class="sgc-nav__ico"><?php echo esc_html( $it['icone'] ); ?></span>
+										<span class="sgc-nav__txt"><?php echo esc_html( $it['rotulo'] ); ?></span>
+									</button>
+								<?php endif; ?>
+							<?php endforeach; ?>
+						</div>
 					</div>
 				<?php endforeach; ?>
-				<div class="sgc-nav__grupo">
-					<p>Gestão</p>
-					<a class="sgc-nav__item" href="<?php echo esc_url( admin_url( 'admin.php?page=sgc-loja' ) ); ?>"><span class="sgc-nav__ico">📦</span><span>Produtos, pedidos e clientes</span></a>
-					<a class="sgc-nav__item" href="<?php echo esc_url( admin_url( 'admin.php?page=sgc-integracoes' ) ); ?>"><span class="sgc-nav__ico">🔌</span><span>Pagamento e frete</span></a>
+				<div class="sgc-nav__grupo" data-no="g-gestao">
+					<button type="button" class="sgc-nav__gt" aria-expanded="true" aria-controls="sgc-nav-g-gestao" data-alterna>
+						<span>Gestão</span><i class="sgc-seta" aria-hidden="true"></i>
+					</button>
+					<div class="sgc-nav__lista" id="sgc-nav-g-gestao">
+						<?php foreach ( $gestao as $g ) : ?>
+							<a class="sgc-nav__item" href="<?php echo esc_url( $g[0] ); ?>"><span class="sgc-nav__ico"><?php echo esc_html( $g[2] ); ?></span><span class="sgc-nav__txt"><?php echo esc_html( $g[1] ); ?></span></a>
+						<?php endforeach; ?>
+					</div>
 				</div>
 			</nav>
+
+			<div class="sgc-centro">
+			<div class="sgc-ir" data-ir-caixa>
+				<label class="sgc-ir__rotulo" for="sgc-ir-campo">Ir para…</label>
+				<div class="sgc-ir__campo">
+					<input type="search" id="sgc-ir-campo" class="sgc-in" placeholder="Achar uma seção…" title="Digite para achar uma seção (ex.: banners, cores)" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="sgc-ir-lista" aria-autocomplete="list" data-ir-busca>
+					<ul class="sgc-ir__lista" id="sgc-ir-lista" role="listbox" hidden data-ir-lista>
+						<?php foreach ( $opcoes as $o ) : ?>
+							<?php if ( $o['url'] ) : ?>
+								<li role="option" class="sgc-ir__op" data-url="<?php echo esc_url( $o['url'] ); ?>" data-txt="<?php echo esc_attr( $o['txt'] ); ?>"><?php echo esc_html( $o['rot'] ); ?></li>
+							<?php else : ?>
+								<li role="option" class="sgc-ir__op" data-destino="<?php echo esc_attr( $o['id'] ); ?>" data-txt="<?php echo esc_attr( $o['txt'] ); ?>"><?php echo esc_html( $o['rot'] ); ?></li>
+							<?php endif; ?>
+						<?php endforeach; ?>
+						<li class="sgc-ir__vazio" hidden data-ir-vazio>Nada encontrado. Tente outra palavra.</li>
+					</ul>
+				</div>
+			</div>
 
 			<main class="sgc-form" id="sgc-form">
 				<?php foreach ( $secoes as $s ) : ?>
 					<section class="sgc-sec" data-sec="<?php echo esc_attr( $s['id'] ); ?>" data-ancora="<?php echo esc_attr( $s['ancora'] ); ?>" hidden>
 						<header class="sgc-sec__cab">
+							<nav class="sgc-trilha" aria-label="Você está em">
+								<ol>
+									<?php $trilha = sgc_trilha( $s ); $ult = count( $trilha ) - 1; foreach ( $trilha as $i => $t ) : ?>
+										<li><?php if ( $i < $ult ) : ?><button type="button" data-ir="<?php echo esc_attr( $t['id'] ); ?>"><?php echo esc_html( $t['rotulo'] ); ?></button><?php else : ?><span aria-current="page"><?php echo esc_html( $t['rotulo'] ); ?></span><?php endif; ?></li>
+									<?php endforeach; ?>
+								</ol>
+							</nav>
 							<h1><span><?php echo esc_html( $s['icone'] ); ?></span> <?php echo esc_html( $s['titulo'] ); ?></h1>
 							<p><?php echo esc_html( $s['desc'] ); ?></p>
 						</header>
@@ -168,13 +261,13 @@ function sgc_pagina() {
 						<?php endif; ?>
 
 						<?php if ( isset( $s['grupos'] ) ) : ?>
-							<div class="sgc-abas" role="tablist">
+							<div class="sgc-abas" role="tablist" aria-label="Partes desta seção">
 								<?php $i = 0; foreach ( $s['grupos'] as $nome => $campos ) : ?>
-									<button type="button" class="sgc-aba<?php echo 0 === $i ? ' on' : ''; ?>" data-aba="<?php echo (int) $i; ?>"><?php echo esc_html( $nome ); ?></button>
+									<button type="button" role="tab" id="sgc-aba-<?php echo esc_attr( $s['id'] . '-' . $i ); ?>" aria-controls="sgc-painel-<?php echo esc_attr( $s['id'] . '-' . $i ); ?>" aria-selected="<?php echo 0 === $i ? 'true' : 'false'; ?>" tabindex="<?php echo 0 === $i ? '0' : '-1'; ?>" class="sgc-aba<?php echo 0 === $i ? ' on' : ''; ?>" data-aba="<?php echo (int) $i; ?>"><?php echo esc_html( $nome ); ?></button>
 									<?php $i++; endforeach; ?>
 							</div>
 							<?php $i = 0; foreach ( $s['grupos'] as $nome => $campos ) : ?>
-								<div class="sgc-painel" data-painel="<?php echo (int) $i; ?>" <?php echo 0 === $i ? '' : 'hidden'; ?>>
+								<div class="sgc-painel" role="tabpanel" id="sgc-painel-<?php echo esc_attr( $s['id'] . '-' . $i ); ?>" aria-labelledby="sgc-aba-<?php echo esc_attr( $s['id'] . '-' . $i ); ?>" data-painel="<?php echo (int) $i; ?>" <?php echo 0 === $i ? '' : 'hidden'; ?>>
 									<?php foreach ( $campos as $c ) { sgc_linha( $c, $base ); } ?>
 								</div>
 								<?php $i++; endforeach; ?>
@@ -186,15 +279,17 @@ function sgc_pagina() {
 					</section>
 				<?php endforeach; ?>
 			</main>
+			</div>
 
 			<aside class="sgc-previa" aria-label="Prévia do site">
 				<div class="sgc-previa__barra">
+					<button type="button" class="sgc-bt sgc-so-celular" data-previa-alterna>← Voltar ao editor</button>
 					<div class="sgc-disp" role="group" aria-label="Tamanho da tela">
 						<button type="button" class="sgc-disp__bt on" data-disp="desktop" title="Computador">🖥️ <span>Computador</span></button>
 						<button type="button" class="sgc-disp__bt" data-disp="tablet" title="Tablet">📱 <span>Tablet</span></button>
 						<button type="button" class="sgc-disp__bt" data-disp="mobile" title="Celular">📲 <span>Celular</span></button>
 					</div>
-					<button type="button" class="sgc-mini" data-recarrega title="Recarregar a prévia">⟳</button>
+					<span class="sgc-previa__ferr"><button type="button" class="sgc-mini sgc-mini--ampliar" data-ampliar aria-pressed="false" aria-label="Ampliar a prévia" title="Ampliar a prévia">⤢</button><button type="button" class="sgc-mini" data-recarrega aria-label="Recarregar a prévia" title="Recarregar a prévia">⟳</button></span>
 				</div>
 				<div class="sgc-previa__palco" data-palco>
 					<div class="sgc-previa__tela" data-tela>
