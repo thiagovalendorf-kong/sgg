@@ -1,0 +1,158 @@
+/* ==========================================================================
+   Gestão organizada: seções no menu, página inicial de cartões e painel inicial.
+   (Usa as variáveis --sgcv-* do painel.css.)
+   ========================================================================== */
+body.sgcv {
+	--e-1: 8px;
+	--e-2: 12px;
+	--e-3: 16px;
+	--e-4: 24px;
+	--e-5: 32px;
+	--e-6: 48px;
+	--e-7: 64px;
+	--sgcv-destaque-texto: #ffffff;
+	--sgcv-listra: #F9F5EA;
+	--sgcv-ok: #1F7A4D;
+	--sgcv-ok-fundo: #E7F6EE;
+	--sgcv-aviso: #9A6A00;
+	--sgcv-aviso-fundo: #FFF6DD;
+	--sgcv-erro: #B42318;
+	--sgcv-erro-fundo: #FDECEA;
+	--sgcv-info: #1E40AF;
+	--sgcv-info-fundo: #E9EEFB;
+	--sgcv-perigo: #B42318;
+	--sgcv-sucesso: #1F7A4D;
+	--sgcv-azul-hover: #16348A;
+	--sgcv-sombra: 0 18px 40px -22px rgba(30, 64, 175, .35);
+}
+body.sgcv-escuro {
+	--sgcv-destaque-texto: #0E1426;
+	--sgcv-listra: #1A2444;
+	--sgcv-ok: #6EE0A3;
+	--sgcv-ok-fundo: #12301F;
+	--sgcv-aviso: #F2C75C;
+	--sgcv-aviso-fundo: #33290D;
+	--sgcv-erro: #FF9C93;
+	--sgcv-erro-fundo: #3A1715;
+	--sgcv-info: #9DB5FF;
+	--sgcv-info-fundo: #16224A;
+	--sgcv-perigo: #FF9C93;
+	--sgcv-sucesso: #6EE0A3;
+	--sgcv-azul-hover: #D6A32F;
+	--sgcv-sombra: 0 18px 40px -22px rgba(0, 0, 0, .7);
+}
+/* Cabeçalho de seção dentro do submenu "Gestão" (texto sem clique) */
+body.sgcv #adminmenu .wp-submenu li.sgc-secao { margin-top: var(--e-1); }
+body.sgcv #adminmenu .wp-submenu li.sgc-secao:first-of-type { margin-top: 0; }
+body.sgcv #adminmenu .wp-submenu li.sgc-secao a,
+body.sgcv #adminmenu .wp-submenu li.sgc-secao a:hover,
+body.sgcv #adminmenu .wp-submenu li.sgc-secao a:focus {
+	pointer-events: none; cursor: default; background: transparent; box-shadow: none;
+	padding: var(--e-2) var(--e-3) var(--e-1) var(--e-3); border-top: 1px solid var(--sgcv-borda);
+	font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--sgcv-mudo); line-height: 1.4;
+}
+body.sgcv #adminmenu .wp-submenu li.sgc-secao + li { margin-top: 0; }
+body.sgcv #adminmenu .wp-submenu li.wp-first-item + li.sgc-secao { margin-top: var(--e-1); }
+
+
+body.sgcv.folded #adminmenu li.sgc-secao, body.sgcv.folded #adminmenu .wp-submenu li.sgc-secao { margin-top: var(--e-1); }
+
+/* Widgets do painel inicial: 2 colunas, sem caixa vazia */
+body.sgcv-pleno #dashboard-widgets-wrap { max-width: 1180px; margin: 0; }
+body.sgcv-pleno #dashboard-widgets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e-4); align-items: start; }
+body.sgcv-pleno #dashboard-widgets .postbox-container { width: auto !important; float: none; min-width: 0; }
+body.sgcv-pleno #dashboard-widgets #postbox-container-3, body.sgcv-pleno #dashboard-widgets #postbox-container-4,
+body.sgcv-pleno #dashboard-widgets .empty-container { display: none; }
+body.sgcv-pleno #dashboard-widgets .meta-box-sortables { min-height: 0; margin: 0; }
+body.sgcv-pleno #dashboard-widgets .postbox { margin-bottom: 0; }
+body.sgcv-pleno #dashboard-widgets .postbox-header .handle-actions { display: none; }
+body.sgcv-pleno #dashboard-widgets .postbox .hndle { cursor: default; padding: var(--e-2) var(--e-4); font-size: 16px; }
+body.sgcv-pleno #dashboard-widgets .postbox .inside { margin: 0; padding: var(--e-3) var(--e-4) var(--e-4); }
+body.sgcv-pleno #dashboard-widgets .welcome-panel { display: none; }
+body.sgcv-pleno .index-php .wrap h1 { margin-bottom: var(--e-4); }
+@media (max-width: 899px) {
+	body.sgcv-pleno #dashboard-widgets { grid-template-columns: minmax(0, 1fr); }
+}
+.sgc-atalhos { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: var(--e-2); }
+body.sgcv .sgc-atalhos a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--e-1); min-height: 96px; padding: var(--e-3) var(--e-2);
+	border: 1px solid var(--sgcv-borda); border-radius: var(--e-2); text-decoration: none; font-weight: 600; font-size: 14px; text-align: center; line-height: 1.3;
+	background: var(--sgcv-fundo); color: var(--sgcv-texto); transition: border-color .18s, transform .18s; }
+body.sgcv .sgc-atalhos a:hover { border-color: var(--sgcv-ouro); transform: translateY(-2px); color: var(--sgcv-texto); }
+.sgc-atalhos .dashicons { width: 32px; height: 32px; font-size: 32px; color: var(--sgcv-destaque); }
+.sgc-numeros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--e-2); }
+.sgc-numeros div { padding: var(--e-3) var(--e-2); border-radius: var(--e-2); background: var(--sgcv-fundo); border: 1px solid var(--sgcv-borda); text-align: center; }
+.sgc-numeros b { display: block; font-size: 32px; font-weight: 300; line-height: 1.2; color: var(--sgcv-destaque); }
+.sgc-numeros span { font-size: 13px; color: var(--sgcv-mudo); }
+.sgc-vazio { margin: 0; color: var(--sgcv-mudo); }
+@media (max-width: 480px) { .sgc-numeros { grid-template-columns: minmax(0, 1fr); } }
+
+
+/* ==========================================================================
+   10. WooCommerce (telas de lista e configurações; produto é do produto-ux)
+   ========================================================================== */
+body.sgcv-pleno .woocommerce-layout, body.sgcv-pleno .woocommerce-layout__primary, body.sgcv-pleno .woocommerce-layout__main, body.sgcv-pleno.woocommerce-page #wpbody-content { background: transparent; color: var(--sgcv-texto); }
+body.sgcv-pleno .woocommerce-layout__header, body.sgcv-pleno .woocommerce-layout__header-wrapper, body.sgcv-pleno .woocommerce-layout__activity-panel-tabs { background: var(--sgcv-cartao); border-color: var(--sgcv-borda); color: var(--sgcv-texto); box-shadow: none; }
+body.sgcv-pleno .woocommerce-layout__header-breadcrumbs, body.sgcv-pleno .woocommerce-layout__header-breadcrumbs a { color: var(--sgcv-texto); }
+body.sgcv-pleno .woocommerce-card, body.sgcv-pleno .woocommerce-section-header, body.sgcv-pleno .components-panel, body.sgcv-pleno .components-modal__content,
+body.sgcv-pleno .woocommerce-table__table, body.sgcv-pleno .woocommerce-report-chart, body.sgcv-pleno .woocommerce-summary { background: var(--sgcv-cartao); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv-pleno .components-button, body.sgcv-pleno .woocommerce-table__header, body.sgcv-pleno .woocommerce-table__item { color: var(--sgcv-texto); }
+body.sgcv-pleno .woocommerce_options_panel, body.sgcv-pleno .wc-metaboxes-wrapper, body.sgcv-pleno .panel { background: var(--sgcv-cartao); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv-pleno .woocommerce_options_panel label, body.sgcv-pleno .form-field label { color: var(--sgcv-texto); }
+body.sgcv-pleno .woocommerce_options_panel .description, body.sgcv-pleno .woocommerce_options_panel p.form-field .description { color: var(--sgcv-mudo); }
+body.sgcv-pleno ul.wc-tabs { background: var(--sgcv-hover); border-color: var(--sgcv-borda); }
+body.sgcv-pleno ul.wc-tabs li a { color: var(--sgcv-menu-texto); border-color: var(--sgcv-borda); }
+body.sgcv-pleno ul.wc-tabs li.active a { background: var(--sgcv-cartao); color: var(--sgcv-texto); }
+body.sgcv-pleno .wc-metaboxes-wrapper .wc-metabox, body.sgcv-pleno .wc-metaboxes-wrapper .wc-metabox h3 { background: var(--sgcv-cartao); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv-pleno .woo-nav-tab-wrapper .nav-tab { color: var(--sgcv-mudo); }
+body.sgcv-pleno .woo-nav-tab-wrapper .nav-tab-active { color: var(--sgcv-texto); }
+body.sgcv-pleno .woocommerce table.form-table th, body.sgcv-pleno .woocommerce table.form-table td { color: var(--sgcv-texto); }
+body.sgcv-pleno table.wc_status_table, body.sgcv-pleno table.wc_gateways, body.sgcv-pleno table.wc_emails, body.sgcv-pleno table.wc_shipping { background: var(--sgcv-cartao); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv-pleno .woocommerce-save-button, body.sgcv-pleno .woocommerce-save-button:hover { color: var(--sgcv-destaque-texto); }
+
+/* ==========================================================================
+   11. Páginas "Gestão" (hub) e "Pagamento e frete"
+   ========================================================================== */
+.sgc-loja { max-width: 1180px; padding: var(--e-1) 0 var(--e-6); }
+.sgc-loja h1 { font-size: 28px; font-weight: 650; letter-spacing: -.02em; margin: 0; }
+.sgc-loja__sub { color: var(--sgcv-mudo); font-size: 15px; margin: var(--e-1) 0 var(--e-4); }
+.sgc-loja__tit { margin: var(--e-5) 0 var(--e-2); padding: 0; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--sgcv-mudo); }
+.sgc-loja__d { margin: 0 0 var(--e-2); color: var(--sgcv-mudo); }
+
+/* busca do hub */
+.sgc-hub__busca { position: relative; max-width: 560px; }
+.sgc-hub__busca .dashicons { position: absolute; left: var(--e-2); top: 50%; transform: translateY(-50%); color: var(--sgcv-mudo); pointer-events: none; }
+body.sgcv .sgc-hub__busca input[type=search] { width: 100%; box-sizing: border-box; min-height: 48px; padding: 0 var(--e-3) 0 var(--e-6); font-size: 15px;
+	background: var(--sgcv-cartao); color: var(--sgcv-texto); border: 1px solid var(--sgcv-borda); border-radius: var(--e-2); }
+.sgc-hub__vazio { margin: var(--e-5) 0; padding: var(--e-4); text-align: center; color: var(--sgcv-mudo); border: 1px dashed var(--sgcv-borda); border-radius: var(--e-2); }
+.sgc-hub__vazio[hidden] { display: none; }
+.sgc-hub__secao[hidden], .sgc-hubc[hidden] { display: none; }
+
+/* faixa "Mais usados" */
+body.sgcv .sgc-rapidos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: var(--e-2); }
+body.sgcv .sgc-rapido { display: flex; align-items: center; gap: var(--e-2); min-height: 64px; padding: var(--e-2); border: 1px solid var(--sgcv-ouro); border-radius: var(--e-2);
+	background: var(--sgcv-cartao); color: var(--sgcv-texto); text-decoration: none; transition: transform .18s, box-shadow .18s; }
+body.sgcv .sgc-rapido:hover, .sgc-rapido:focus { transform: translateY(-2px); box-shadow: var(--sgcv-sombra); color: var(--sgcv-texto); }
+body.sgcv .sgc-rapido .dashicons { flex: none; width: 40px; height: 40px; font-size: 22px; line-height: 40px; text-align: center; border-radius: 50%; background: var(--sgcv-hover); color: var(--sgcv-destaque); }
+body.sgcv .sgc-rapido b { font-size: 14.5px; font-weight: 650; line-height: 1.3; }
+
+/* cartões das seções */
+.sgc-hubgrade { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: var(--e-3); }
+.sgc-hubc { display: flex; gap: var(--e-3); align-items: flex-start; padding: var(--e-4) var(--e-3); border: 1px solid var(--sgcv-borda); border-radius: var(--e-3);
+	background: var(--sgcv-cartao); color: var(--sgcv-texto); transition: border-color .18s, box-shadow .18s; min-width: 0; }
+.sgc-hubc:hover, .sgc-hubc:focus-within { border-color: var(--sgcv-ouro); box-shadow: var(--sgcv-sombra); }
+.sgc-hubc__ico.dashicons { flex: none; width: 44px; height: 44px; font-size: 24px; line-height: 44px; text-align: center; border-radius: var(--e-2); background: var(--sgcv-hover); color: var(--sgcv-destaque); }
+.sgc-hubc__corpo { min-width: 0; flex: 1; }
+.sgc-hubc h3 { margin: 0 0 4px; font-size: 16px; font-weight: 650; line-height: 1.3; }
+body.sgcv .sgc-hubc h3 a { color: var(--sgcv-texto); text-decoration: none; }
+body.sgcv .sgc-hubc h3 a:hover { color: var(--sgcv-destaque); text-decoration: underline; }
+.sgc-hubc p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--sgcv-mudo); }
+.sgc-hubc__links { display: flex; flex-wrap: wrap; gap: var(--e-1); margin-top: var(--e-2); }
+body.sgcv .sgc-hubc__links a { display: inline-flex; align-items: center; min-height: 32px; padding: 0 var(--e-2); border: 1px solid var(--sgcv-borda); border-radius: 999px;
+	font-size: 13px; font-weight: 500; text-decoration: none; background: var(--sgcv-fundo); color: var(--sgcv-texto); }
+body.sgcv .sgc-hubc__links a:hover { border-color: var(--sgcv-destaque); color: var(--sgcv-destaque); }
+
+
+/* Gestão: as duas grades com as mesmas colunas */
+body.sgcv .sgc-rapidos { grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
+.sgc-hubgrade { align-items: start; }
+

@@ -24,8 +24,10 @@ function sgcv_modo() {
  */
 function sgcv_assets() {
 	wp_enqueue_style( 'sgcv', SGC_URL . 'assets/painel.css', array(), SGC_VERSAO );
-	wp_enqueue_style( 'sgcv-escuro', SGC_URL . 'assets/escuro.css', array( 'sgcv' ), SGC_VERSAO );
+	wp_enqueue_style( 'sgcv-gestao', SGC_URL . 'assets/gestao.css', array( 'sgcv' ), SGC_VERSAO );
+	wp_enqueue_style( 'sgcv-escuro', SGC_URL . 'assets/escuro.css', array( 'sgcv-gestao' ), SGC_VERSAO );
 	wp_enqueue_script( 'sgcv', SGC_URL . 'assets/painel.js', array(), SGC_VERSAO, true );
+	wp_enqueue_script( 'sgcv-gestao', SGC_URL . 'assets/gestao.js', array(), SGC_VERSAO, true );
 	wp_enqueue_script( 'sgcv-normalizador', SGC_URL . 'assets/normalizador.js', array(), SGC_VERSAO, true );
 	wp_localize_script( 'sgcv', 'SGCV', array(
 		'ajax'  => admin_url( 'admin-ajax.php' ),
@@ -42,7 +44,10 @@ add_action( 'admin_enqueue_scripts', 'sgcv_assets' );
  * @return string
  */
 function sgcv_body( $classes ) {
-	return $classes . ' sgcv sgcv-' . sgcv_modo() . ' ';
+	$tela = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	// O editor de blocos (Gutenberg) fica como está; as demais telas ganham o visual "pleno".
+	$pleno = ! ( $tela && method_exists( $tela, 'is_block_editor' ) && $tela->is_block_editor() );
+	return $classes . ' sgcv sgcv-' . sgcv_modo() . ( $pleno ? ' sgcv-pleno' : '' ) . ' ';
 }
 add_filter( 'admin_body_class', 'sgcv_body' );
 
