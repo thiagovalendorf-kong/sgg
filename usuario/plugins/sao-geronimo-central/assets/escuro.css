@@ -1,0 +1,100 @@
+/* ==========================================================================
+   São Gerônimo — modo escuro padronizado.
+   Complementa o painel.css: regras fixas para o que já se conhece e o "carimbo"
+   do normalizador.js para tudo o mais. Nada aqui afeta o modo claro.
+   ========================================================================== */
+
+/* Formulários e barras de rolagem nativos também escurecem */
+body.sgcv-escuro { color-scheme: dark; }
+body.sgcv-escuro ::placeholder { color: var(--sgcv-mudo); opacity: 1; }
+
+/* Carimbo do normalizador (caixas que algum plugin pintou de claro) */
+body.sgcv-escuro [data-sgcv-fb="cartao"] { background-color: var(--sgcv-cartao) !important; }
+body.sgcv-escuro [data-sgcv-fb="campo"]  { background-color: var(--sgcv-campo)  !important; }
+
+/* ------------------------------------------------------------------ textos */
+body.sgcv-escuro .description, body.sgcv-escuro p.description, body.sgcv-escuro .howto,
+body.sgcv-escuro td.column-description p, body.sgcv-escuro td.description p, body.sgcv-escuro .plugin-description p,
+body.sgcv-escuro .column-title p.filename, body.sgcv-escuro .row-actions, body.sgcv-escuro .displaying-num,
+body.sgcv-escuro .tablenav .tablenav-pages, body.sgcv-escuro .install-help, body.sgcv-escuro .wp-list-table .row-title + .row-actions,
+body.sgcv-escuro .plugin-title + .row-actions, body.sgcv-escuro .check-column label { color: var(--sgcv-mudo); }
+body.sgcv-escuro .subsubsub .count, body.sgcv-escuro span.count, body.sgcv-escuro .count { color: var(--sgcv-mudo); }
+body.sgcv-escuro .tablenav-pages-navspan { color: var(--sgcv-mudo); background: var(--sgcv-hover); border-color: var(--sgcv-borda); }
+body.sgcv-escuro a.screen-reader-shortcut:focus { background: var(--sgcv-cartao); color: var(--sgcv-destaque); }
+body.sgcv-escuro .wp-list-table td, body.sgcv-escuro .wp-list-table th, body.sgcv-escuro .widefat td, body.sgcv-escuro .widefat th { color: var(--sgcv-texto); }
+body.sgcv-escuro .wp-list-table a, body.sgcv-escuro .widefat a { color: var(--sgcv-destaque); }
+body.sgcv-escuro .wp-list-table .row-actions a { color: var(--sgcv-mudo); }
+body.sgcv-escuro .wp-list-table .row-actions a:hover { color: var(--sgcv-destaque); }
+body.sgcv-escuro #removing-post-thumbnail, body.sgcv-escuro a#remove-post-thumbnail { color: #ff8d8f; }
+body.sgcv-escuro .submitdelete, body.sgcv-escuro a.submitdelete { color: #ff8d8f; }
+
+/* --------------------------------------------------- caixas do editor / posts */
+body.sgcv-escuro #post-status-info, body.sgcv-escuro #wp-word-count, body.sgcv-escuro .autosave-info,
+body.sgcv-escuro .wp-editor-tools .wp-editor-tabs button { background: var(--sgcv-hover); color: var(--sgcv-mudo); border-color: var(--sgcv-borda); }
+body.sgcv-escuro .wp-editor-tabs .active, body.sgcv-escuro .wp-switch-editor.switch-html:focus { color: var(--sgcv-texto); }
+body.sgcv-escuro .wp-editor-area, body.sgcv-escuro textarea.wp-editor-area { background: var(--sgcv-campo); color: var(--sgcv-texto); }
+body.sgcv-escuro .categorydiv div.tabs-panel, body.sgcv-escuro .tagsdiv .tagchecklist, body.sgcv-escuro ul.categorychecklist,
+body.sgcv-escuro .tabs-panel, body.sgcv-escuro .wp-tab-panel, body.sgcv-escuro #category-add { background: var(--sgcv-campo); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv-escuro .categorychecklist label, body.sgcv-escuro .selectit, body.sgcv-escuro .categorydiv label { color: var(--sgcv-texto); }
+body.sgcv-escuro .category-tabs li, body.sgcv-escuro ul.category-tabs a, body.sgcv-escuro ul.add-menu-item-tabs a { color: var(--sgcv-destaque); }
+body.sgcv-escuro .category-tabs .tabs a, body.sgcv-escuro .wp-tab-active { background: var(--sgcv-campo); }
+body.sgcv-escuro .major-publishing-actions, body.sgcv-escuro #misc-publishing-actions, body.sgcv-escuro .misc-pub-section,
+body.sgcv-escuro #minor-publishing-actions { background: transparent; border-color: var(--sgcv-borda); color: var(--sgcv-texto); }
+body.sgcv-escuro .misc-pub-section label { color: var(--sgcv-texto); }
+body.sgcv-escuro #titlediv #title, body.sgcv-escuro #titlediv input#title { background: var(--sgcv-campo); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv-escuro #titlediv #edit-slug-box, body.sgcv-escuro #edit-slug-box { color: var(--sgcv-mudo); }
+
+/* --------------------------------------------------------------- WooCommerce */
+body.sgcv-escuro #woocommerce-product-data ul.wc-tabs { background: var(--sgcv-hover); border-color: var(--sgcv-borda); }
+body.sgcv-escuro #woocommerce-product-data ul.wc-tabs li a { color: var(--sgcv-menu-texto); border-color: var(--sgcv-borda); background: transparent; }
+body.sgcv-escuro #woocommerce-product-data ul.wc-tabs li a::before { color: var(--sgcv-mudo); }
+body.sgcv-escuro #woocommerce-product-data ul.wc-tabs li.active a { background: var(--sgcv-cartao); color: var(--sgcv-texto); }
+body.sgcv-escuro #woocommerce-product-data .wc-metaboxes-wrapper, body.sgcv-escuro #woocommerce-product-data .panel,
+body.sgcv-escuro #woocommerce-product-data .woocommerce_options_panel { background: var(--sgcv-cartao); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv-escuro #woocommerce-product-data .options_group { border-color: var(--sgcv-borda); background: transparent; }
+body.sgcv-escuro #woocommerce-product-data label, body.sgcv-escuro #woocommerce-product-data legend { color: var(--sgcv-texto); }
+body.sgcv-escuro #woocommerce-product-data .description, body.sgcv-escuro #woocommerce-product-data p.description { color: var(--sgcv-mudo); }
+body.sgcv-escuro #woocommerce-product-data .toolbar, body.sgcv-escuro .wc-metaboxes-wrapper .toolbar,
+body.sgcv-escuro .wc-metabox h3, body.sgcv-escuro .woocommerce_variation h3, body.sgcv-escuro .woocommerce_attribute h3 { background: var(--sgcv-hover); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv-escuro .wc-metabox, body.sgcv-escuro .woocommerce_variation, body.sgcv-escuro .woocommerce_attribute { background: var(--sgcv-cartao); border-color: var(--sgcv-borda); color: var(--sgcv-texto); }
+body.sgcv-escuro .wc-metabox-content, body.sgcv-escuro .woocommerce_variable_attributes { background: var(--sgcv-cartao); color: var(--sgcv-texto); }
+body.sgcv-escuro #woocommerce-product-data .inline.notice, body.sgcv-escuro .options_group .inline.notice, body.sgcv-escuro .woocommerce-message, body.sgcv-escuro .woocommerce-info {
+  background: var(--sgcv-hover); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv-escuro .woocommerce-help-tip { color: var(--sgcv-mudo); }
+body.sgcv-escuro .select2-container--default .select2-selection--single, body.sgcv-escuro .select2-container--default .select2-selection--multiple {
+  background: var(--sgcv-campo); border-color: var(--sgcv-borda); color: var(--sgcv-texto); }
+body.sgcv-escuro .select2-container--default .select2-selection--single .select2-selection__rendered { color: var(--sgcv-texto); }
+body.sgcv-escuro .select2-dropdown { background: var(--sgcv-cartao); border-color: var(--sgcv-borda); color: var(--sgcv-texto); }
+body.sgcv-escuro .select2-container--default .select2-results__option { color: var(--sgcv-texto); }
+body.sgcv-escuro .select2-container--default .select2-results__option--highlighted { background: var(--sgcv-destaque); color: var(--sgcv-menu-ativo-texto); }
+body.sgcv-escuro .select2-search--dropdown .select2-search__field { background: var(--sgcv-campo); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+
+/* ------------------------------------------------------------- Menus do site */
+body.sgcv-escuro .nav-menus-php .menu-settings, body.sgcv-escuro #menu-management, body.sgcv-escuro #nav-menu-header, body.sgcv-escuro #nav-menu-footer,
+body.sgcv-escuro .manage-menus, body.sgcv-escuro #menu-to-edit .menu-item-bar .menu-item-handle, body.sgcv-escuro .menu-item-settings,
+body.sgcv-escuro #side-sortables .accordion-section, body.sgcv-escuro .accordion-section-title, body.sgcv-escuro .accordion-section-content,
+body.sgcv-escuro .nav-menus-php .posttypediv, body.sgcv-escuro .nav-menus-php .taxonomydiv { background: var(--sgcv-cartao); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv-escuro .nav-menus-php label, body.sgcv-escuro .menu-name-label, body.sgcv-escuro .menu-settings-group-name, body.sgcv-escuro .menu-settings h3,
+body.sgcv-escuro .nav-menus-php .howto, body.sgcv-escuro .first-menu-message, body.sgcv-escuro .post-body-plain { color: var(--sgcv-texto); }
+body.sgcv-escuro .nav-menus-php .menu-item-handle .item-title { color: var(--sgcv-texto); }
+
+/* ---------------------------------------------------- Temas, usuários, perfil */
+body.sgcv-escuro .theme-browser .theme .theme-name, body.sgcv-escuro .theme .theme-name { background: var(--sgcv-hover); color: var(--sgcv-texto); box-shadow: none; }
+body.sgcv-escuro .theme-browser .theme { background: var(--sgcv-cartao); border-color: var(--sgcv-borda); }
+body.sgcv-escuro .color-option { background: var(--sgcv-cartao); border-color: var(--sgcv-borda); }
+body.sgcv-escuro .color-option label, body.sgcv-escuro .color-option .color-palette td { color: var(--sgcv-texto); }
+
+/* --------------------------------------------------------------- Plugins */
+body.sgcv-escuro .plugins tr.active th, body.sgcv-escuro .plugins tr.active td, body.sgcv-escuro .plugins tr.inactive th, body.sgcv-escuro .plugins tr.inactive td { background: var(--sgcv-cartao); }
+body.sgcv-escuro .plugins .plugin-update-tr .update-message, body.sgcv-escuro .plugin-update-tr .notice { background: var(--sgcv-hover); color: var(--sgcv-texto); }
+body.sgcv-escuro .plugin-card, body.sgcv-escuro .plugin-card-bottom { background: var(--sgcv-cartao); border-color: var(--sgcv-borda); color: var(--sgcv-texto); }
+
+/* ------------------------------------------- Telas do painel São Gerônimo */
+body.sgcv-escuro .sgp {
+  --sgp-borda: var(--sgcv-borda);
+  --sgp-fundo: var(--sgcv-hover);
+  --sgp-texto: var(--sgcv-texto);
+  --sgp-mudo: var(--sgcv-mudo);
+}
+body.sgcv-escuro .sgp-salvar { background: linear-gradient(180deg, rgba(14, 20, 38, 0) 0%, var(--sgcv-fundo) 38%); }
+body.sgcv-escuro .sgp-card { background: var(--sgcv-cartao); border-color: var(--sgcv-borda); color: var(--sgcv-texto); }
