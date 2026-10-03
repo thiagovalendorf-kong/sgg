@@ -187,20 +187,96 @@ function sgc_secoes() {
 
 		/* ------------------------------------------------------------ LOJA */
 		array(
-			'id' => 'loja', 'grupo' => 'Loja e atendimento', 'icone' => '🏪', 'titulo' => 'Página da loja',
-			'desc' => 'Como os produtos aparecem e como o preço é mostrado.', 'ver' => 'loja', 'ancora' => '',
-			'campos' => array(
-				array( 'k' => 'loja_colunas', 't' => 'number', 'l' => 'Produtos por linha (computador)', 'd' => 4, 'min' => 2, 'max' => 5 ),
-				array( 'k' => 'loja_por_pagina', 't' => 'number', 'l' => 'Produtos por página', 'd' => 24, 'min' => 4, 'max' => 96 ),
-				array( 'k' => 'texto_botao_comprar', 't' => 'text', 'l' => 'Texto do botão de compra', 'd' => 'Comprar agora' ),
-				array( 'k' => 'selo_novo_dias', 't' => 'number', 'l' => 'Selo "Novo" fica por quantos dias', 'd' => 30, 'min' => 0, 'max' => 365, 'a' => '0 desliga o selo.' ),
-				array( 'k' => 'parcelas_max', 't' => 'number', 'l' => 'Parcelas sem juros (máximo)', 'd' => 10, 'min' => 1, 'max' => 12 ),
-				array( 'k' => 'pix_desconto', 't' => 'number', 'l' => 'Desconto no Pix (%)', 'd' => 5, 'min' => 0, 'max' => 50 ),
-				array( 'k' => 'mostrar_favoritos', 't' => 'toggle', 'l' => 'Mostrar o coração de favoritos', 'd' => 'sim' ),
+			'id' => 'loja', 'grupo' => 'Página da loja', 'icone' => '🏪', 'titulo' => 'Loja e categorias',
+			'desc' => 'A página com todos os produtos, os filtros e as páginas de categoria.', 'ver' => 'loja', 'ancora' => '',
+			'grupos' => array(
+				'Capa e filtros' => array(
+					array( 'k' => 'loja_titulo', 't' => 'text', 'l' => 'Título da página', 'd' => 'Loja' ),
+					array( 'k' => 'loja_desc', 't' => 'textarea', 'l' => 'Frase embaixo do título', 'p' => 'Tudo para o seu altar e o seu caminho.' ),
+					array( 'k' => 'loja_filtros', 't' => 'toggle', 'l' => 'Mostrar a barra de filtros', 'd' => 'sim' ),
+					array( 'k' => 'loja_filtro_categorias', 't' => 'toggle', 'l' => 'Filtro de categorias', 'd' => 'sim' ),
+					array( 'k' => 'loja_filtro_preco', 't' => 'toggle', 'l' => 'Filtro de preço', 'd' => 'sim' ),
+					array( 'k' => 'loja_filtro_linhas', 't' => 'toggle', 'l' => 'Filtro de linhas', 'd' => 'sim' ),
+					array( 'k' => 'loja_colunas', 't' => 'number', 'l' => 'Produtos por linha', 'd' => 4, 'min' => 2, 'max' => 5 ),
+					array( 'k' => 'loja_por_pagina', 't' => 'number', 'l' => 'Produtos por página', 'd' => 24, 'min' => 4, 'max' => 96 ),
+				),
+				'Cartões dos produtos' => array(
+					array( 'k' => 'texto_botao_comprar', 't' => 'text', 'l' => 'Texto do botão de compra', 'd' => 'Comprar agora' ),
+					array( 'k' => 'selo_novo_dias', 't' => 'number', 'l' => 'Selo "Novo" fica por quantos dias', 'd' => 30, 'min' => 0, 'max' => 365, 'a' => '0 desliga o selo.' ),
+					array( 'k' => 'mostrar_favoritos', 't' => 'toggle', 'l' => 'Mostrar o coração de favoritos', 'd' => 'sim' ),
+				),
 			),
 		),
 		array(
-			'id' => 'contato', 'grupo' => 'Loja e atendimento', 'icone' => '📞', 'titulo' => 'Contato e WhatsApp',
+			'id' => 'produto', 'grupo' => 'Página do produto', 'icone' => '🏷️', 'titulo' => 'Página do produto',
+			'desc' => 'Parcelas, Pix, selos de confiança e produtos relacionados.', 'ver' => 'produto', 'ancora' => '',
+			'grupos' => array(
+				'Preço e parcelas' => array(
+					array( 'k' => 'parcelas_max', 't' => 'number', 'l' => 'Parcelas sem juros (máximo)', 'd' => 10, 'min' => 1, 'max' => 12, 'a' => 'Só informa o cliente. As parcelas reais vêm da sua conta do Mercado Pago.' ),
+					array( 'k' => 'pix_desconto', 't' => 'number', 'l' => 'Desconto no Pix (%)', 'd' => 5, 'min' => 0, 'max' => 50 ),
+				),
+				'Selos de confiança' => array(
+					array( 'k' => 'produto_selos', 't' => 'toggle', 'l' => 'Mostrar os selos embaixo do botão de compra', 'd' => 'sim' ),
+					array( 'k' => 'produto_selo1', 't' => 'text', 'l' => 'Selo 1', 'd' => 'Compra 100% segura' ),
+					array( 'k' => 'produto_selo2', 't' => 'text', 'l' => 'Selo 2', 'd' => 'Enviamos para todo o Brasil' ),
+					array( 'k' => 'produto_selo3', 't' => 'text', 'l' => 'Selo 3', 'd' => 'Troca fácil em até 7 dias' ),
+					array( 'k' => 'produto_aviso', 't' => 'text', 'l' => 'Aviso pequeno embaixo (opcional)', 'p' => 'Produto artesanal: cor e tamanho podem variar.' ),
+				),
+				'Relacionados' => array(
+					array( 'k' => 'produto_relacionados', 't' => 'toggle', 'l' => 'Mostrar "produtos relacionados"', 'd' => 'sim' ),
+				),
+			),
+		),
+		array(
+			'id' => 'post', 'grupo' => 'Posts do blog', 'icone' => '📝', 'titulo' => 'Post individual',
+			'desc' => 'Como cada texto do blog aparece.', 'ver' => 'post', 'ancora' => '',
+			'campos' => array(
+				array( 'k' => 'post_mostra_data', 't' => 'toggle', 'l' => 'Mostrar a data', 'd' => 'sim' ),
+				array( 'k' => 'post_mostra_autor', 't' => 'toggle', 'l' => 'Mostrar o autor', 'd' => 'sim' ),
+				array( 'k' => 'post_relacionados', 't' => 'toggle', 'l' => 'Mostrar "Leia também" no final', 'd' => 'sim' ),
+				array( 'k' => 'post_relacionados_titulo', 't' => 'text', 'l' => 'Título do "Leia também"', 'd' => 'Leia também' ),
+			),
+		),
+		array(
+			'id' => 'carrinho', 'grupo' => 'Carrinho e checkout', 'icone' => '🛒', 'titulo' => 'Carrinho',
+			'desc' => 'A página da sacola de compras.', 'ver' => 'carrinho', 'ancora' => '',
+			'campos' => array(
+				array( 'k' => 'frete_gratis_valor', 't' => 'number', 'l' => 'Frete grátis a partir de (R$)', 'd' => 0, 'min' => 0, 'max' => 99999, 'a' => 'Mostra uma barrinha "falta pouco para o frete grátis". 0 desliga. A regra de frete em si é configurada em Gestão → Pagamento e frete.' ),
+			),
+		),
+		array(
+			'id' => 'checkout', 'grupo' => 'Carrinho e checkout', 'icone' => '💳', 'titulo' => 'Finalizar compra',
+			'desc' => 'A página de pagamento. Os campos e as formas de pagar vêm do WooCommerce e do Mercado Pago.', 'ver' => 'checkout', 'ancora' => '',
+			'campos' => array(
+				array( 'k' => 'checkout_aviso', 't' => 'text', 'l' => 'Aviso no topo (opcional)', 'p' => 'Pedidos até 15h saem no mesmo dia.' ),
+				array( 'k' => 'checkout_botao', 't' => 'text', 'l' => 'Texto do botão final', 'p' => 'Finalizar pedido' ),
+				array( 'k' => 'checkout_seguranca', 't' => 'text', 'l' => 'Frase de segurança embaixo do botão', 'd' => 'Pagamento seguro. Seus dados são protegidos.' ),
+			),
+		),
+		array(
+			'id' => 'conta', 'grupo' => 'Minha conta', 'icone' => '🙋', 'titulo' => 'Área do cliente',
+			'desc' => 'A página onde o cliente vê pedidos, endereços e dados.', 'ver' => 'conta', 'ancora' => '',
+			'campos' => array(
+				array( 'k' => 'conta_boas_vindas', 't' => 'textarea', 'l' => 'Recado de boas-vindas (opcional)', 'p' => 'Aqui você acompanha seus pedidos e atualiza seus dados.' ),
+			),
+		),
+		array(
+			'id' => 'paginas', 'grupo' => 'Outras páginas', 'icone' => '📄', 'titulo' => 'Páginas comuns',
+			'desc' => 'Contato, trocas e devoluções, políticas… Os textos de cada página você edita em Gestão → Páginas.', 'ver' => '/', 'ancora' => '',
+			'campos' => array(
+				array( 'k' => 'pagina_mostra_capa', 't' => 'toggle', 'l' => 'Mostrar a imagem de capa das páginas', 'd' => 'sim' ),
+			),
+		),
+		array(
+			'id' => 'erro404', 'grupo' => 'Outras páginas', 'icone' => '🧩', 'titulo' => 'Página não encontrada',
+			'desc' => 'O que aparece quando o endereço não existe.', 'ver' => '/pagina-que-nao-existe-sgc/', 'ancora' => '',
+			'campos' => array(
+				array( 'k' => 'texto_404_titulo', 't' => 'text', 'l' => 'Título', 'd' => 'Esta página não existe mais.' ),
+				array( 'k' => 'texto_404', 't' => 'textarea', 'l' => 'Texto', 'd' => 'Pode ser que o endereço tenha mudado. Use a busca ou volte para a loja — o que você procura provavelmente está lá.' ),
+			),
+		),
+		array(
+			'id' => 'contato', 'grupo' => 'Atendimento', 'icone' => '📞', 'titulo' => 'Contato e WhatsApp',
 			'desc' => 'Telefone, e-mail, endereço e o botão flutuante do WhatsApp.', 'ver' => '/', 'ancora' => '.rodape',
 			'campos' => array(
 				array( 'k' => 'whatsapp', 't' => 'text', 'l' => 'WhatsApp (com DDD)', 'a' => 'Só números, com 55 na frente.', 'p' => '5548999999999', 'd' => '5548996397562' ),
@@ -215,7 +291,7 @@ function sgc_secoes() {
 
 		/* ---------------------------------------------------------- VISUAL */
 		array(
-			'id' => 'cores', 'grupo' => 'Visual', 'icone' => '🎨', 'titulo' => 'Cores',
+			'id' => 'cores', 'grupo' => 'Visual do site', 'icone' => '🎨', 'titulo' => 'Cores',
 			'desc' => 'Mude uma cor e o site inteiro acompanha.', 'ver' => '/', 'ancora' => '',
 			'campos' => array(
 				array( 'k' => 'cor_primaria', 't' => 'color', 'l' => 'Cor principal (botões e links)', 'd' => '#1E40AF' ),
@@ -227,7 +303,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'logo', 'grupo' => 'Visual', 'icone' => '🔤', 'titulo' => 'Logo, letras e formato',
+			'id' => 'logo', 'grupo' => 'Visual do site', 'icone' => '🔤', 'titulo' => 'Logo, letras e formato',
 			'desc' => 'Logotipo, fontes e jeito dos cantos.', 'ver' => '/', 'ancora' => '',
 			'campos' => array(
 				array( 'k' => 'logo_img', 't' => 'image', 'l' => 'Logotipo (imagem)', 'a' => 'Sem imagem, o site usa o nome em texto.' ),
@@ -241,7 +317,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'topo', 'grupo' => 'Visual', 'icone' => '📢', 'titulo' => 'Aviso do topo',
+			'id' => 'topo', 'grupo' => 'Visual do site', 'icone' => '📢', 'titulo' => 'Aviso do topo',
 			'desc' => 'A faixinha de aviso acima do menu.', 'ver' => '/', 'ancora' => '.faixa-topo',
 			'campos' => array(
 				array( 'k' => 'faixa_topo_ativa', 't' => 'toggle', 'l' => 'Mostrar o aviso', 'd' => 'sim' ),
@@ -250,7 +326,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'rodape', 'grupo' => 'Visual', 'icone' => '🦶', 'titulo' => 'Rodapé',
+			'id' => 'rodape', 'grupo' => 'Visual do site', 'icone' => '🦶', 'titulo' => 'Rodapé',
 			'desc' => 'A faixa de redes sociais e o rodapé do site.', 'ver' => '/', 'ancora' => '.rodape',
 			'grupos' => array(
 				'Faixa de redes' => array(
@@ -273,15 +349,7 @@ function sgc_secoes() {
 			),
 		),
 		array(
-			'id' => 'erro404', 'grupo' => 'Visual', 'icone' => '🧩', 'titulo' => 'Página não encontrada',
-			'desc' => 'O que aparece quando o endereço não existe.', 'ver' => '/pagina-que-nao-existe-sgc/', 'ancora' => '',
-			'campos' => array(
-				array( 'k' => 'texto_404_titulo', 't' => 'text', 'l' => 'Título', 'd' => 'Esta página não existe mais.' ),
-				array( 'k' => 'texto_404', 't' => 'textarea', 'l' => 'Texto', 'd' => 'Pode ser que o endereço tenha mudado. Use a busca ou volte para a loja — o que você procura provavelmente está lá.' ),
-			),
-		),
-		array(
-			'id' => 'avancado', 'grupo' => 'Visual', 'icone' => '🛠️', 'titulo' => 'Avançado',
+			'id' => 'avancado', 'grupo' => 'Visual do site', 'icone' => '🛠️', 'titulo' => 'Avançado',
 			'desc' => 'Para quem sabe CSS. Se não sabe, pode ignorar.', 'ver' => '/', 'ancora' => '',
 			'campos' => array(
 				array( 'k' => 'css_extra', 't' => 'css', 'l' => 'CSS extra', 'a' => 'Entra no site inteiro.' ),

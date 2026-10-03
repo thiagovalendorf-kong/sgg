@@ -84,7 +84,7 @@ $sg_e_novo    = $sg_novo_dias > 0 && ( time() - get_post_time( 'U', true, $sg_id
 
 		<?php else : ?>
 			<div class="prod__preco">
-				<b><?php echo wp_kses_post( $product->get_price_html() ); ?></b>
+				<b class="prod__valor"><?php echo wp_kses_post( $product->get_price_html() ); ?></b>
 				<?php if ( $sg_preco > 0 && $sg_parcelas > 1 ) : ?>
 					<span><?php
 						printf(

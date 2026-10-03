@@ -149,3 +149,73 @@ body.sgcv-escuro .button-primary, body.sgcv-escuro .page-title-action { color: #
 .sgc-numeros span { font-size: 12.5px; color: var(--sgcv-mudo); }
 body.sgcv #dashboard-widgets-wrap .postbox-container { width: 100% !important; }
 body.sgcv #dashboard-widgets .postbox-container { width: 100%; }
+
+/* ==========================================================================
+   Reforço: nenhum bloco do painel pode ficar sem fundo ou sem cor de texto
+   ========================================================================== */
+html.wp-toolbar { background: var(--sgcv-fundo, #FCFAF5); }
+body.sgcv-escuro, html:has(body.sgcv-escuro) { background: #0E1426; }
+body.sgcv #wpbody-content, body.sgcv .wrap, body.sgcv #poststuff, body.sgcv .metabox-holder { color: var(--sgcv-texto); }
+body.sgcv .wrap h1, body.sgcv .wrap h2, body.sgcv .wrap h3, body.sgcv .form-table th, body.sgcv .form-table td, body.sgcv label, body.sgcv legend { color: var(--sgcv-texto); }
+body.sgcv .postbox .inside, body.sgcv .postbox-header, body.sgcv .stuffbox .inside, body.sgcv .tablenav, body.sgcv .tablenav .tablenav-pages { background: transparent; color: var(--sgcv-texto); }
+body.sgcv .postbox, body.sgcv .card, body.sgcv .plugin-card, body.sgcv .theme, body.sgcv .theme-browser .theme, body.sgcv .wp-filter, body.sgcv .media-frame-content, body.sgcv .attachments-browser,
+body.sgcv #the-list, body.sgcv .plugins tr, body.sgcv .wp-list-table tbody tr { background: var(--sgcv-cartao); color: var(--sgcv-texto); }
+body.sgcv .plugin-card-bottom { background: var(--sgcv-hover); border-color: var(--sgcv-borda); }
+body.sgcv .plugins .active td, body.sgcv .plugins .active th { background: var(--sgcv-hover); }
+body.sgcv .wp-list-table tbody tr:nth-child(odd), body.sgcv .striped > tbody > :nth-child(odd) { background: var(--sgcv-cartao); }
+body.sgcv .wp-list-table .row-actions, body.sgcv .wp-list-table .row-actions a { color: var(--sgcv-mudo); }
+body.sgcv .subsubsub a, body.sgcv .tablenav-pages a, body.sgcv .page-numbers { color: var(--sgcv-destaque); }
+body.sgcv a { color: var(--sgcv-destaque); }
+body.sgcv #adminmenu a, body.sgcv #wpadminbar a { color: var(--sgcv-menu-texto); }
+body.sgcv #adminmenu .wp-submenu a:hover, body.sgcv #adminmenu li a:focus div.wp-menu-image:before { color: var(--sgcv-texto); }
+body.sgcv #adminmenu .wp-has-current-submenu .wp-submenu, body.sgcv #adminmenu .wp-submenu { background: transparent; }
+body.sgcv #adminmenu .wp-not-current-submenu .wp-submenu { background: var(--sgcv-cartao); border: 1px solid var(--sgcv-borda); border-radius: 12px; box-shadow: 0 14px 40px -16px rgba(0,0,0,.35); }
+body.sgcv #adminmenu .wp-submenu .wp-submenu-head { color: var(--sgcv-texto); }
+body.sgcv #adminmenu .wp-submenu li.current a, body.sgcv #adminmenu .wp-submenu li.current a:hover { color: var(--sgcv-texto); font-weight: 600; }
+body.sgcv #wpadminbar .quicklinks .menupop ul li a, body.sgcv #wpadminbar .quicklinks .menupop .ab-sub-wrapper { background: var(--sgcv-cartao); color: var(--sgcv-menu-texto); }
+body.sgcv .wp-core-ui .button, body.sgcv .wp-core-ui .button-secondary { background: var(--sgcv-cartao); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv .wp-core-ui .button-primary { background: var(--sgcv-destaque); border-color: var(--sgcv-destaque); color: #fff; }
+body.sgcv-escuro .wp-core-ui .button-primary { color: #0E1426; }
+body.sgcv .media-modal-content, body.sgcv .media-frame, body.sgcv .media-sidebar, body.sgcv .media-toolbar, body.sgcv .media-frame-title, body.sgcv .media-frame-router, body.sgcv .media-frame-toolbar .media-toolbar { background: var(--sgcv-cartao); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv .media-modal-close { color: var(--sgcv-texto); }
+body.sgcv .media-menu, body.sgcv .media-frame-menu { background: var(--sgcv-hover); }
+body.sgcv .media-menu-item { color: var(--sgcv-texto); }
+body.sgcv .wp-editor-wrap, body.sgcv .mce-container, body.sgcv .mce-panel, body.sgcv .wp-editor-container { background: var(--sgcv-cartao); border-color: var(--sgcv-borda); }
+body.sgcv .wp-editor-tabs .wp-switch-editor { background: var(--sgcv-hover); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv .tablenav .actions select, body.sgcv .search-box input { background-color: var(--sgcv-campo); }
+/* WooCommerce (React) */
+body.sgcv .woocommerce-layout, body.sgcv .woocommerce-layout__primary, body.sgcv .woocommerce-layout__main, body.sgcv .woocommerce-page #wpbody-content { background: transparent; color: var(--sgcv-texto); }
+body.sgcv .woocommerce-card, body.sgcv .woocommerce-section-header, body.sgcv .components-card, body.sgcv .components-panel, body.sgcv .components-modal__content, body.sgcv .woocommerce-table__table, body.sgcv .woocommerce-report-chart, body.sgcv .woocommerce-summary { background: var(--sgcv-cartao); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv .woocommerce-layout__header-wrapper, body.sgcv .woocommerce-layout__header { background: var(--sgcv-cartao); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+body.sgcv .components-button, body.sgcv .woocommerce-table__header, body.sgcv .woocommerce-table__item { color: var(--sgcv-texto); }
+body.sgcv .wc-metaboxes-wrapper .wc-metabox, body.sgcv .wc-metaboxes-wrapper .wc-metabox h3 { background: var(--sgcv-cartao); color: var(--sgcv-texto); border-color: var(--sgcv-borda); }
+
+/* ==========================================================================
+   Telas "Gestão" e "Pagamento e frete"
+   ========================================================================== */
+.sgc-loja { max-width: 1100px; padding: 8px 12px 48px; }
+.sgc-loja__d { margin: -8px 0 12px; color: var(--sgcv-mudo); }
+.sgc-cartao--destaque { border-color: var(--sgcv-ouro); background: linear-gradient(180deg, var(--sgcv-cartao), var(--sgcv-hover)); }
+.sgc-lista-links { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.sgc-lista-links a { display: inline-flex; align-items: center; min-height: 38px; padding: 0 16px; border: 1px solid var(--sgcv-borda); border-radius: 999px;
+	background: var(--sgcv-cartao); text-decoration: none; font-weight: 500; font-size: 13.5px; color: var(--sgcv-texto); transition: all .15s; }
+.sgc-lista-links a:hover { border-color: var(--sgcv-destaque); color: var(--sgcv-destaque); }
+.sgc-passo { padding: 24px; border: 1px solid var(--sgcv-borda); border-radius: 16px; background: var(--sgcv-cartao); max-width: 860px; }
+.sgc-passo p { margin: 0 0 12px; line-height: 1.6; }
+.sgc-nota { display: block; margin-top: 12px; font-size: 13px; color: var(--sgcv-mudo); }
+.sgc-ok { max-width: 860px; margin: 8px 0 16px; padding: 14px 18px; border-radius: 12px; background: #e7f6ee; border: 1px solid #b5e0c8; color: #17603a; font-weight: 600; }
+.sgc-checks { list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 8px; }
+.sgc-checks li { padding-left: 30px; position: relative; }
+.sgc-checks li::before { content: "✓"; position: absolute; left: 0; top: 0; width: 22px; height: 22px; display: grid; place-items: center; border-radius: 50%; font-size: 12px; font-weight: 700; background: #2fa66a; color: #fff; }
+.sgc-checks li.no::before { content: "!"; background: var(--sgcv-ouro); color: #1B2A4A; }
+.sgc-passos { margin: 0 0 8px 20px; padding: 0; display: grid; gap: 12px; line-height: 1.6; }
+.sgc-plugins { display: grid; gap: 12px; max-width: 860px; }
+.sgc-plugin { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 20px; border: 1px solid var(--sgcv-borda); border-radius: 14px; background: var(--sgcv-cartao); }
+.sgc-plugin.ok { border-color: #b5e0c8; }
+.sgc-plugin p { margin: 4px 0 0; color: var(--sgcv-mudo); font-size: 13.5px; }
+.sgc-plugin__acao { display: flex; align-items: center; gap: 10px; flex: none; }
+.sgc-selo-ok { font-weight: 700; color: #17835a; }
+.sgc-loja .sgc-bt { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 18px; border-radius: 12px; border: 1px solid var(--sgcv-borda); background: var(--sgcv-cartao); color: var(--sgcv-texto); font-weight: 600; text-decoration: none; cursor: pointer; }
+.sgc-loja .sgc-bt--principal { background: var(--sgcv-destaque); border-color: var(--sgcv-destaque); color: #fff; }
+body.sgcv-escuro .sgc-loja .sgc-bt--principal { color: #0E1426; }
+@media (max-width: 700px) { .sgc-plugin { flex-direction: column; align-items: stretch; } }

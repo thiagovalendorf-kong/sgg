@@ -36,8 +36,8 @@ function sg_wc_abre() {
 	$e_lista = ( function_exists( 'is_shop' ) && is_shop() ) || is_product_category() || is_product_tag();
 
 	if ( $e_lista ) {
-		$titulo = is_shop() ? get_the_title( wc_get_page_id( 'shop' ) ) : single_term_title( '', false );
-		$desc   = '';
+		$titulo = is_shop() ? sg_opt( 'loja_titulo', get_the_title( wc_get_page_id( 'shop' ) ) ) : single_term_title( '', false );
+		$desc   = is_shop() ? (string) sg_opt( 'loja_desc', '' ) : '';
 		if ( is_product_category() || is_product_tag() ) {
 			$termo = get_queried_object();
 			$desc  = ( $termo && ! empty( $termo->description ) ) ? $termo->description : '';
@@ -670,3 +670,63 @@ add_action( 'init', function () {
 		update_option( 'sg_loja_verificada', SG_VERSAO );
 	}
 }, 30 );
+
+
+/* -------------------------------------------------------------------------
+ * Preço em HTML simples
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Preço sempre em uma linha só: "R$ 35,90".
+ *
+ * O HTML padrão do WooCommerce embrulha símbolo e valor em vários <span>/<bdi>,
+ * e qualquer CSS que mexa em <span> acaba quebrando o preço em duas linhas ou
+ * encolhendo o valor. Aqui o preço sai como texto puro, dentro de um único
+ * elemento que nunca quebra.
+ *
+ * @param float $valor Valor.
+ * @return string
+ */
+function sg_moeda( $valor ) {
+	return str_replace( ' ', "\xC2\xA0", sg_preco_texto( $valor ) );
+}
+
+/**
+ * Troca o HTML do preço por uma versão simples.
+ *
+ * @param string     $html    HTML original.
+ * @param WC_Product $product Produto.
+ * @return string
+ */
+function sg_wc_preco_simples( $html, $product ) {
+	if ( is_admin() && ! wp_doing_ajax() ) {
+		return $html;
+	}
+	if ( 'yes' === get_post_meta( $product->get_id(), '_sg_sob_consulta', true ) || '' === $product->get_price() ) {
+		return $html;
+	}
+
+	if ( $product->is_type( 'variable' ) ) {
+		$min = (float) $product->get_variation_price( 'min', true );
+		$max = (float) $product->get_variation_price( 'max', true );
+		$txt = '<span class="sg-preco"><span class="sg-preco__por">' . esc_html( sg_moeda( $min ) ) . '</span>';
+		if ( $max > $min ) {
+			$txt .= '<span class="sg-preco__ate"> – ' . esc_html( sg_moeda( $max ) ) . '</span>';
+		}
+		return $txt . '</span>';
+	}
+
+	if ( $product->is_type( 'grouped' ) ) {
+		return $html;
+	}
+
+	$atual = (float) wc_get_price_to_display( $product );
+	$cheio = (float) wc_get_price_to_display( $product, array( 'price' => $product->get_regular_price() ) );
+
+	$txt = '<span class="sg-preco">';
+	if ( $product->is_on_sale() && $cheio > $atual ) {
+		$txt .= '<del class="sg-preco__de">' . esc_html( sg_moeda( $cheio ) ) . '</del> ';
+	}
+	return $txt . '<span class="sg-preco__por">' . esc_html( sg_moeda( $atual ) ) . '</span></span>';
+}
+add_filter( 'woocommerce_get_price_html', 'sg_wc_preco_simples', 99, 2 );

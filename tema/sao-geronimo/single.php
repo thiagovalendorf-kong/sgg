@@ -26,9 +26,11 @@ while ( have_posts() ) :
 				<?php endif; ?>
 				<h1 class="h-sec"><?php the_title(); ?></h1>
 				<p class="pagina__meta texto-mudo">
-					<?php echo esc_html( get_the_date() ); ?>
+					<?php if ( 'nao' !== sg_opt( 'post_mostra_data', 'sim' ) ) : ?>
+						<?php echo esc_html( get_the_date() ); ?>
+					<?php endif; ?>
 					<?php if ( 'sim' === sg_opt( 'post_mostra_autor', 'sim' ) ) : ?>
-						&middot; <?php echo esc_html( get_the_author() ); ?>
+						<?php echo 'nao' !== sg_opt( 'post_mostra_data', 'sim' ) ? '&middot;' : ''; ?> <?php echo esc_html( get_the_author() ); ?>
 					<?php endif; ?>
 				</p>
 			</header>
@@ -45,6 +47,29 @@ while ( have_posts() ) :
 		</article>
 
 		<?php
+		if ( 'nao' !== sg_opt( 'post_relacionados', 'sim' ) ) {
+			$sg_rel = get_posts( array(
+				'numberposts'  => 3,
+				'post__not_in' => array( get_the_ID() ),
+				'category__in' => wp_get_post_categories( get_the_ID() ),
+			) );
+			if ( $sg_rel ) :
+				?>
+				<aside class="leia-tambem">
+					<h2><?php echo esc_html( sg_opt( 'post_relacionados_titulo', 'Leia também' ) ); ?></h2>
+					<div class="leia-tambem__grade">
+						<?php foreach ( $sg_rel as $sg_r ) : ?>
+							<a class="leia-tambem__item" href="<?php echo esc_url( get_permalink( $sg_r ) ); ?>">
+								<?php if ( has_post_thumbnail( $sg_r ) ) { echo get_the_post_thumbnail( $sg_r, 'medium', array( 'loading' => 'lazy' ) ); } // phpcs:ignore WordPress.Security.EscapeOutput ?>
+								<b><?php echo esc_html( get_the_title( $sg_r ) ); ?></b>
+								<span><?php echo esc_html( get_the_date( '', $sg_r ) ); ?></span>
+							</a>
+						<?php endforeach; ?>
+					</div>
+				</aside>
+				<?php
+			endif;
+		}
 		if ( comments_open() || get_comments_number() ) {
 			comments_template();
 		}

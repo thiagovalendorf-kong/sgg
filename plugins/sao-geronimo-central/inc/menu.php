@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Menus que ficam à vista (o resto é recolhido).
+ * Menus que ficam à vista no topo (o resto vai para dentro de "Gestão").
  *
  * @return array
  */
@@ -35,37 +35,94 @@ function sgc_url_menu( $slug ) {
 }
 
 /**
- * Menu "Minha Loja".
+ * Título limpo (sem contadores e tags).
+ *
+ * @param string $t Título do menu.
+ * @return string
+ */
+function sgc_titulo_limpo( $t ) {
+	return trim( wp_strip_all_tags( preg_replace( '#<span.*?</span>#is', '', (string) $t ) ) );
+}
+
+/**
+ * Endereço da lista de pedidos (muda conforme a versão do WooCommerce).
+ *
+ * @return string
+ */
+function sgc_url_pedidos() {
+	if ( class_exists( '\\Automattic\\WooCommerce\\Utilities\\OrderUtil' ) && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ) {
+		return admin_url( 'admin.php?page=wc-orders' );
+	}
+	return admin_url( 'edit.php?post_type=shop_order' );
+}
+
+/**
+ * Menu "Gestão": o único lugar onde ficam todas as abas nativas do WordPress.
  */
 function sgc_menu_loja() {
-	add_menu_page( 'Minha Loja', 'Minha Loja', 'edit_posts', 'sgc-loja', 'sgc_pagina_loja', 'dashicons-store', 3 );
+	add_menu_page( 'Gestão', 'Gestão', 'edit_posts', 'sgc-loja', 'sgc_pagina_loja', 'dashicons-store', 3 );
+	add_submenu_page( 'sgc-loja', 'Visão geral', 'Visão geral', 'edit_posts', 'sgc-loja', 'sgc_pagina_loja' );
 }
 add_action( 'admin_menu', 'sgc_menu_loja' );
 
 /**
- * Recolhe os menus. Roda por último para pegar também os dos outros plugins.
+ * Leva as abas nativas para dentro de "Gestão". Roda por último, para pegar
+ * também os menus criados por outros plugins.
  */
 function sgc_recolher_menus() {
-	global $menu;
+	global $menu, $submenu;
 
-	$guardados = array();
-	foreach ( (array) $menu as $pos => $item ) {
+	$grupos = array();   // slug do menu => dados
+	foreach ( (array) $menu as $item ) {
 		$slug = isset( $item[2] ) ? $item[2] : '';
-		if ( ! $slug || false !== strpos( (string) $item[4], 'wp-menu-separator' ) || in_array( $slug, sgc_menus_fixos(), true ) ) {
+		if ( ! $slug || false !== strpos( (string) ( $item[4] ?? '' ), 'wp-menu-separator' ) || in_array( $slug, sgc_menus_fixos(), true ) ) {
 			continue;
 		}
-		$titulo = trim( wp_strip_all_tags( preg_replace( '#<span.*?</span>#is', '', (string) $item[0] ) ) );
+		$titulo = sgc_titulo_limpo( $item[0] );
 		if ( '' === $titulo ) {
 			continue;
 		}
-		$guardados[ $slug ] = array( 'titulo' => $titulo, 'url' => sgc_url_menu( $slug ), 'cap' => $item[1] );
+		$filhos = array();
+		foreach ( (array) ( $submenu[ $slug ] ?? array() ) as $sub ) {
+			$t = sgc_titulo_limpo( $sub[0] );
+			if ( '' !== $t ) {
+				$filhos[] = array( 'titulo' => $t, 'slug' => $sub[2], 'cap' => $sub[1], 'url' => sgc_url_menu( $sub[2] ) );
+			}
+		}
+		$grupos[ $slug ] = array( 'titulo' => $titulo, 'slug' => $slug, 'cap' => $item[1], 'url' => sgc_url_menu( $slug ), 'filhos' => $filhos );
 	}
+	$GLOBALS['sgc_grupos'] = $grupos;
 
-	// Guarda para a página "Minha Loja" e some do menu.
-	$GLOBALS['sgc_menus_recolhidos'] = $guardados;
-	foreach ( array_keys( $guardados ) as $slug ) {
+	// Ordem: o que mais se usa vem primeiro.
+	$ordem = array( 'edit.php?post_type=product', 'woocommerce', 'wc-admin&path=/customers', 'edit.php?post_type=shop_order', 'upload.php', 'edit.php?post_type=page', 'edit-comments.php', 'users.php', 'plugins.php', 'tools.php' );
+	uksort( $grupos, function ( $a, $b ) use ( $ordem ) {
+		$ia = array_search( $a, $ordem, true );
+		$ib = array_search( $b, $ordem, true );
+		$ia = false === $ia ? 99 : $ia;
+		$ib = false === $ib ? 99 : $ib;
+		return $ia <=> $ib;
+	} );
+
+	foreach ( $grupos as $slug => $g ) {
+		// Produtos e WooCommerce mostram suas telas principais; os demais, só a entrada.
+		$entradas = in_array( $slug, array( 'edit.php?post_type=product', 'woocommerce', 'plugins.php' ), true ) && $g['filhos'] ? $g['filhos'] : array( $g );
+		foreach ( $entradas as $e ) {
+			if ( in_array( $e['titulo'], array( 'Início', 'Home', 'Extensões', 'Extensions', 'Marketing' ), true ) ) {
+				continue;
+			}
+			$rotulo = $e['titulo'];
+			if ( 'woocommerce' === $slug && in_array( $rotulo, array( 'Configurações', 'Settings' ), true ) ) {
+				$rotulo = 'Configurações da loja (WooCommerce)';
+			}
+			if ( 'edit.php?post_type=product' === $slug && 'Todos os produtos' !== $rotulo && 'All Products' !== $rotulo ) {
+				$rotulo = '— ' . $rotulo;
+			}
+			add_submenu_page( 'sgc-loja', $rotulo, $rotulo, $e['cap'], preg_match( '/\.php/', $e['slug'] ) ? $e['slug'] : 'admin.php?page=' . $e['slug'] );
+		}
 		remove_menu_page( $slug );
 	}
+
+	add_submenu_page( 'sgc-loja', 'Pagamento e frete', 'Pagamento e frete', 'manage_options', 'sgc-integracoes', 'sgc_pagina_integracoes' );
 
 	// Posts vira "Blog".
 	foreach ( (array) $menu as $pos => $item ) {
@@ -73,63 +130,67 @@ function sgc_recolher_menus() {
 			$menu[ $pos ][0] = 'Blog'; // phpcs:ignore WordPress.WP.GlobalVariablesOverride
 		}
 	}
-
-	// Submenus que ninguém precisa no dia a dia.
-	remove_submenu_page( 'options-general.php', 'options-discussion.php' );
-	remove_submenu_page( 'options-general.php', 'options-media.php' );
-	remove_submenu_page( 'options-general.php', 'options-privacy.php' );
-	remove_submenu_page( 'themes.php', 'theme-editor.php' );
-	remove_submenu_page( 'themes.php', 'customize.php' );
 }
 add_action( 'admin_menu', 'sgc_recolher_menus', 9999 );
 
 /**
- * Página "Minha Loja": tudo o que foi recolhido, em cartões grandes.
+ * Quando a pessoa está numa tela que foi para dentro de "Gestão", o menu
+ * "Gestão" fica marcado como o atual.
+ *
+ * @param string $pai Menu pai atual.
+ * @return string
+ */
+function sgc_menu_atual( $pai ) {
+	$grupos = isset( $GLOBALS['sgc_grupos'] ) ? $GLOBALS['sgc_grupos'] : array();
+	if ( $pai && isset( $grupos[ $pai ] ) ) {
+		return 'sgc-loja';
+	}
+	return $pai;
+}
+add_filter( 'parent_file', 'sgc_menu_atual', 99 );
+
+/**
+ * Página "Gestão": tudo o que foi guardado, em cartões, com os atalhos de cada área.
  */
 function sgc_pagina_loja() {
-	$woo = class_exists( 'WooCommerce' );
-	$fixos = array(
-		array( '➕', 'Cadastrar produto', 'Adicione um produto novo com foto, preço e estoque.', admin_url( 'post-new.php?post_type=product' ), $woo ),
-		array( '🛍️', 'Todos os produtos', 'Veja, edite, tire do ar ou mude o preço.', admin_url( 'edit.php?post_type=product' ), $woo ),
-		array( '🏷️', 'Categorias', 'Organize os produtos em categorias.', admin_url( 'edit-tags.php?taxonomy=product_cat&post_type=product' ), $woo ),
-		array( '🧾', 'Pedidos', 'Quem comprou, o que e em que ponto está a entrega.', class_exists( '\Automattic\WooCommerce\Utilities\OrderUtil' ) && \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ? admin_url( 'admin.php?page=wc-orders' ) : admin_url( 'edit.php?post_type=shop_order' ), $woo ),
-		array( '👥', 'Clientes', 'A lista de quem já comprou ou se cadastrou.', admin_url( 'admin.php?page=wc-admin&path=/customers' ), $woo ),
-		array( '🎟️', 'Cupons', 'Crie códigos de desconto.', admin_url( 'edit.php?post_type=shop_coupon' ), $woo ),
-		array( '📊', 'Relatórios', 'Vendas, produtos mais vendidos e resultados.', admin_url( 'admin.php?page=wc-admin&path=/analytics/overview' ), $woo ),
-		array( '⚙️', 'Pagamento, frete e impostos', 'Mercado Pago, Correios, transportadoras.', admin_url( 'admin.php?page=wc-settings' ), $woo ),
-		array( '🖼️', 'Biblioteca de imagens', 'Todas as fotos enviadas ao site.', admin_url( 'upload.php' ), true ),
-		array( '📄', 'Páginas do site', 'Contato, políticas, trocas e devoluções…', admin_url( 'edit.php?post_type=page' ), true ),
-		array( '💬', 'Comentários', 'Respostas e avaliações.', admin_url( 'edit-comments.php' ), true ),
-		array( '🙋', 'Usuários do painel', 'Quem pode entrar aqui e com qual permissão.', admin_url( 'users.php' ), true ),
+	$grupos = isset( $GLOBALS['sgc_grupos'] ) ? $GLOBALS['sgc_grupos'] : array();
+	$icones = array(
+		'edit.php?post_type=product' => '🛍️', 'woocommerce' => '🧾', 'upload.php' => '🖼️', 'edit.php?post_type=page' => '📄',
+		'edit-comments.php' => '💬', 'users.php' => '🙋', 'plugins.php' => '🔌', 'tools.php' => '🧰',
 	);
-	$extras = isset( $GLOBALS['sgc_menus_recolhidos'] ) ? $GLOBALS['sgc_menus_recolhidos'] : array();
+	$descr = array(
+		'edit.php?post_type=product' => 'Cadastre, edite, mude preço e estoque.',
+		'woocommerce' => 'Pedidos, clientes, relatórios e configurações da loja.',
+		'upload.php' => 'Todas as fotos enviadas ao site.',
+		'edit.php?post_type=page' => 'Contato, trocas e devoluções, políticas…',
+		'edit-comments.php' => 'Respostas e avaliações.',
+		'users.php' => 'Quem pode entrar no painel.',
+		'plugins.php' => 'Mercado Pago, Melhor Envio e outros.',
+		'tools.php' => 'Importar, exportar e saúde do site.',
+	);
 	?>
 	<div class="wrap sgc-loja">
-		<h1>Minha Loja</h1>
-		<p class="sgc-loja__sub">Tudo o que você usa para vender, num lugar só.</p>
+		<h1>Gestão</h1>
+		<p class="sgc-loja__sub">Tudo o que você usa para administrar a loja, num lugar só.</p>
 
 		<div class="sgc-cartoes">
-			<?php foreach ( $fixos as $f ) : if ( ! $f[4] ) { continue; } ?>
-				<a class="sgc-cartao" href="<?php echo esc_url( $f[3] ); ?>">
-					<span class="sgc-cartao__ico"><?php echo esc_html( $f[0] ); ?></span>
-					<b><?php echo esc_html( $f[1] ); ?></b>
-					<span><?php echo esc_html( $f[2] ); ?></span>
-				</a>
-			<?php endforeach; ?>
+			<a class="sgc-cartao sgc-cartao--destaque" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=product' ) ); ?>"><span class="sgc-cartao__ico">➕</span><b>Cadastrar produto</b><span>Foto, preço, estoque e categoria.</span></a>
+			<a class="sgc-cartao sgc-cartao--destaque" href="<?php echo esc_url( admin_url( 'admin.php?page=sgc-integracoes' ) ); ?>"><span class="sgc-cartao__ico">💳</span><b>Pagamento e frete</b><span>Mercado Pago, Correios e transportadoras.</span></a>
+			<a class="sgc-cartao sgc-cartao--destaque" href="<?php echo esc_url( admin_url( 'admin.php?page=sgc-central' ) ); ?>"><span class="sgc-cartao__ico">🎨</span><b>Editar o site</b><span>Textos, imagens, cores e prévia.</span></a>
 		</div>
 
-		<?php
-		$mostrados = array( 'woocommerce', 'edit.php?post_type=product', 'upload.php', 'edit.php?post_type=page', 'edit-comments.php', 'users.php', 'woocommerce-marketing', 'wc-admin&path=/customers' );
-		$outros    = array_diff_key( $extras, array_flip( $mostrados ) );
-		?>
-		<?php if ( $outros ) : ?>
-			<h2 class="sgc-loja__tit">Outras ferramentas</h2>
-			<div class="sgc-cartoes sgc-cartoes--mini">
-				<?php foreach ( $outros as $o ) : ?>
-					<a class="sgc-cartao" href="<?php echo esc_url( $o['url'] ); ?>"><b><?php echo esc_html( $o['titulo'] ); ?></b></a>
+		<?php foreach ( $grupos as $slug => $g ) : ?>
+			<h2 class="sgc-loja__tit"><?php echo esc_html( ( $icones[ $slug ] ?? '📁' ) . ' ' . $g['titulo'] ); ?></h2>
+			<?php if ( isset( $descr[ $slug ] ) ) : ?><p class="sgc-loja__d"><?php echo esc_html( $descr[ $slug ] ); ?></p><?php endif; ?>
+			<div class="sgc-lista-links">
+				<?php
+				$lista = $g['filhos'] ? $g['filhos'] : array( $g );
+				foreach ( $lista as $f ) :
+					?>
+					<a href="<?php echo esc_url( $f['url'] ); ?>"><?php echo esc_html( $f['titulo'] ); ?></a>
 				<?php endforeach; ?>
 			</div>
-		<?php endif; ?>
+		<?php endforeach; ?>
 	</div>
 	<?php
 }
@@ -157,7 +218,7 @@ function sgc_widget_atalhos() {
 	$itens = array(
 		array( '🎨', 'Editar o site', admin_url( 'admin.php?page=sgc-central' ) ),
 		array( '➕', 'Cadastrar produto', admin_url( 'post-new.php?post_type=product' ) ),
-		array( '🧾', 'Ver pedidos', admin_url( 'admin.php?page=sgc-loja' ) ),
+		array( '🧾', 'Ver pedidos', sgc_url_pedidos() ),
 		array( '✍️', 'Escrever no blog', admin_url( 'post-new.php' ) ),
 		array( '🌐', 'Abrir o site', home_url( '/' ) ),
 	);

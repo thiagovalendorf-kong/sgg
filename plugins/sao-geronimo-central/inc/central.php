@@ -16,10 +16,30 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return string
  */
 function sgc_url_previa( $ver ) {
-	if ( 'loja' === $ver && function_exists( 'wc_get_page_permalink' ) ) {
-		$url = wc_get_page_permalink( 'shop' );
-	} else {
-		$url = home_url( 'loja' === $ver ? '/' : $ver );
+	$woo = function_exists( 'wc_get_page_permalink' );
+	switch ( $ver ) {
+		case 'loja':
+			$url = $woo ? wc_get_page_permalink( 'shop' ) : home_url( '/' );
+			break;
+		case 'produto':
+			$p   = $woo ? get_posts( array( 'post_type' => 'product', 'numberposts' => 1, 'post_status' => 'publish', 'fields' => 'ids' ) ) : array();
+			$url = $p ? get_permalink( $p[0] ) : ( $woo ? wc_get_page_permalink( 'shop' ) : home_url( '/' ) );
+			break;
+		case 'post':
+			$p   = get_posts( array( 'numberposts' => 1, 'post_status' => 'publish', 'fields' => 'ids' ) );
+			$url = $p ? get_permalink( $p[0] ) : home_url( '/' );
+			break;
+		case 'carrinho':
+			$url = $woo ? wc_get_cart_url() : home_url( '/' );
+			break;
+		case 'checkout':
+			$url = $woo ? wc_get_checkout_url() : home_url( '/' );
+			break;
+		case 'conta':
+			$url = $woo ? wc_get_page_permalink( 'myaccount' ) : home_url( '/' );
+			break;
+		default:
+			$url = home_url( $ver );
 	}
 	return add_query_arg( 'sgc_previa', '1', $url );
 }
@@ -125,8 +145,9 @@ function sgc_pagina() {
 					</div>
 				<?php endforeach; ?>
 				<div class="sgc-nav__grupo">
-					<p>Outras coisas</p>
+					<p>Gestão</p>
 					<a class="sgc-nav__item" href="<?php echo esc_url( admin_url( 'admin.php?page=sgc-loja' ) ); ?>"><span class="sgc-nav__ico">📦</span><span>Produtos, pedidos e clientes</span></a>
+					<a class="sgc-nav__item" href="<?php echo esc_url( admin_url( 'admin.php?page=sgc-integracoes' ) ); ?>"><span class="sgc-nav__ico">🔌</span><span>Pagamento e frete</span></a>
 				</div>
 			</nav>
 
@@ -320,3 +341,30 @@ function sgc_previa_noindex() {
 	}
 }
 add_action( 'wp_head', 'sgc_previa_noindex', 1 );
+
+/**
+ * Na prévia do finalizar compra, o carrinho precisa ter algo; senão o WooCommerce
+ * manda de volta ao carrinho vazio. Põe um produto só para a pessoa ver a tela.
+ */
+function sgc_previa_checkout() {
+	if ( ! sgc_e_previa() || ! function_exists( 'is_checkout' ) || ! is_checkout() || ! WC()->cart || ! WC()->cart->is_empty() ) {
+		return;
+	}
+	$p = get_posts( array( 'post_type' => 'product', 'numberposts' => 1, 'post_status' => 'publish', 'fields' => 'ids' ) );
+	if ( $p ) {
+		WC()->cart->add_to_cart( $p[0] );
+	}
+}
+add_action( 'wp', 'sgc_previa_checkout' );
+
+/**
+ * Quando a pessoa ainda não tem produtos, o finalizar compra redireciona;
+ * na prévia seguramos esse redirecionamento.
+ *
+ * @param string $url Destino.
+ * @return string|false
+ */
+function sgc_previa_sem_redirect( $url ) {
+	return sgc_e_previa() && function_exists( 'is_checkout' ) && is_checkout() ? false : $url;
+}
+add_filter( 'wp_redirect', 'sgc_previa_sem_redirect' );
