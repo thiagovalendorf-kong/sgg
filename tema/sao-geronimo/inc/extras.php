@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Selos de confiança e aviso embaixo do botão de compra.
  */
 function sg_produto_selos() {
-	if ( 'nao' === sg_opt( 'produto_selos', 'sim' ) ) {
+	if ( 'sim' !== sg_opt( 'produto_selos', 'nao' ) ) {
 		return;
 	}
 	$padroes = array(

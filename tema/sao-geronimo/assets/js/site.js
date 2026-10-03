@@ -106,7 +106,7 @@
   }
 
   /* ------------------------------------------- filtro por subcategoria --- */
-  const pilulas = $$(".pilula");
+  const pilulas = $$("button.pilula");
   if (pilulas.length) {
     pilulas.forEach((b) => b.addEventListener("click", () => {
       pilulas.forEach((x) => x.classList.remove("on"));
@@ -122,6 +122,8 @@
   $$("[data-troca]").forEach((b) => b.addEventListener("click", () => {
     const img = $(".pdp__principal img");
     if (!img) return;
+    img.removeAttribute("srcset");
+    img.removeAttribute("sizes");
     img.src = b.dataset.troca;
     $$("[data-troca]").forEach((x) => x.classList.remove("on"));
     b.classList.add("on");

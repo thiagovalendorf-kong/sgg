@@ -116,6 +116,68 @@ function sg_wc_campos_produto() {
 	echo '</div>';
 
 	echo '<div class="options_group">';
+	sg_wc_titulo_grupo( __( 'Blocos da página do produto', 'sao-geronimo' ), __( 'Textos extras que aparecem na coluna da direita, como no site original.', 'sao-geronimo' ) );
+
+	woocommerce_wp_text_input( array(
+		'id'            => '_sg_sobre_titulo',
+		'label'         => __( 'Título do bloco de descrição', 'sao-geronimo' ),
+		'placeholder'   => 'Sobre o produto',
+		'wrapper_class' => 'sgp-largo',
+		'desc_tip'      => true,
+		'description'   => __( 'Ex.: "Sobre o produto" ou "Sobre a peça". O texto em si é a "Descrição completa" lá em cima.', 'sao-geronimo' ),
+	) );
+
+	woocommerce_wp_textarea_input( array(
+		'id'            => '_sg_notas',
+		'label'         => __( 'Notas olfativas', 'sao-geronimo' ),
+		'rows'          => 3,
+		'wrapper_class' => 'sgp-largo',
+		'description'   => __( 'Para incensos e essências. Vira um bloco próprio na página do produto.', 'sao-geronimo' ),
+	) );
+
+	woocommerce_wp_textarea_input( array(
+		'id'            => '_sg_ficha',
+		'label'         => __( 'Ficha técnica (linhas extras)', 'sao-geronimo' ),
+		'rows'          => 5,
+		'wrapper_class' => 'sgp-largo',
+		'description'   => __( 'Uma linha para cada item, assim: Material: Resina e tecido. Referência, marca e categoria já entram sozinhas.', 'sao-geronimo' ),
+	) );
+
+	woocommerce_wp_text_input( array(
+		'id'          => '_sg_peso_txt',
+		'label'       => __( 'Peso por extenso', 'sao-geronimo' ),
+		'placeholder' => '165 g',
+		'desc_tip'    => true,
+		'description' => __( 'Como o peso aparece para o cliente. Se vazio, usamos o peso da aba "Peso e medidas".', 'sao-geronimo' ),
+	) );
+
+	woocommerce_wp_text_input( array(
+		'id'          => '_sg_med_titulo',
+		'label'       => __( 'Título das medidas', 'sao-geronimo' ),
+		'placeholder' => 'Dimensões',
+		'desc_tip'    => true,
+		'description' => __( 'Ex.: "Dimensões com embalagem". Vazio = "Dimensões".', 'sao-geronimo' ),
+	) );
+
+	woocommerce_wp_text_input( array(
+		'id'            => '_sg_med_aviso',
+		'label'         => __( 'Aviso das medidas', 'sao-geronimo' ),
+		'placeholder'   => 'Quer a medida exata da peça?',
+		'wrapper_class' => 'sgp-largo',
+		'desc_tip'      => true,
+		'description'   => __( 'Se preenchido, aparece com o link "Pergunte no WhatsApp" no lugar do peso.', 'sao-geronimo' ),
+	) );
+
+	woocommerce_wp_text_input( array(
+		'id'          => '_sg_nota',
+		'label'       => __( 'Nota de vitrine (estrelas)', 'sao-geronimo' ),
+		'placeholder' => '4.8',
+		'desc_tip'    => true,
+		'description' => __( 'Aparece nas estrelas enquanto o produto não tem avaliações de clientes. Vazio = não mostra.', 'sao-geronimo' ),
+	) );
+	echo '</div>';
+
+	echo '<div class="options_group">';
 	sg_wc_titulo_grupo( __( 'Venda', 'sao-geronimo' ) );
 	woocommerce_wp_checkbox( array(
 		'id'            => '_sg_sob_consulta',
@@ -137,13 +199,13 @@ add_action( 'woocommerce_product_data_panels', 'sg_wc_campos_produto' );
  * @param int $id ID do produto.
  */
 function sg_wc_salva_produto( $id ) {
-	$textos = array( '_sg_dimensoes', '_sg_marca', '_sg_material', '_sg_conteudo', '_sg_cod_fabricante' );
+	$textos = array( '_sg_dimensoes', '_sg_marca', '_sg_material', '_sg_conteudo', '_sg_cod_fabricante', '_sg_sobre_titulo', '_sg_peso_txt', '_sg_nota', '_sg_med_titulo', '_sg_med_aviso' );
 	foreach ( $textos as $c ) {
 		if ( isset( $_POST[ $c ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			update_post_meta( $id, $c, sanitize_text_field( wp_unslash( $_POST[ $c ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification
 		}
 	}
-	$areas = array( '_sg_composicao', '_sg_modo_usar' );
+	$areas = array( '_sg_composicao', '_sg_modo_usar', '_sg_notas', '_sg_ficha' );
 	foreach ( $areas as $c ) {
 		if ( isset( $_POST[ $c ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			update_post_meta( $id, $c, sanitize_textarea_field( wp_unslash( $_POST[ $c ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification

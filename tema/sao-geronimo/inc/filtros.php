@@ -581,7 +581,7 @@ function sg_wc_filtros() {
 	$lim_max  = (int) $faixa[1];
 	?>
 	<div class="filtros-fundo" data-filtros-fechar></div>
-	<aside class="filtros" id="filtros" aria-label="<?php esc_attr_e( 'Filtrar produtos', 'sao-geronimo' ); ?>" data-ativos="<?php echo (int) $ativos; ?>">
+	<aside class="filtros filtros--completo" id="filtros" aria-label="<?php esc_attr_e( 'Filtrar produtos', 'sao-geronimo' ); ?>" data-ativos="<?php echo (int) $ativos; ?>">
 		<form method="get" action="<?php echo esc_url( $base ); ?>" data-filtros-form>
 			<div class="filtros__topo">
 				<h2 id="filtros-titulo"><?php esc_html_e( 'Filtrar', 'sao-geronimo' ); ?></h2>

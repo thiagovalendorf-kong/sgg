@@ -28,6 +28,7 @@ function sg_icone( $nome, $tam = 17 ) {
 		'seta'      => '<path d="M5 12h14M13 6l6 6-6 6"/>',
 		'ant'       => '<path d="M15 6l-6 6 6 6"/>',
 		'prox'      => '<path d="M9 6l6 6-6 6"/>',
+		'foto'      => '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m21 16-5-5L5 20"/>',
 		'regua'     => '<rect x="2.5" y="8" width="19" height="8" rx="1.5"/><path d="M6.5 8v3M10.5 8v4M14.5 8v3M18.5 8v4"/>',
 		'caminhao'  => '<path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/>',
 		'escudo'    => '<path d="M12 3l8 3v6c0 5-3.4 8-8 9-4.6-1-8-4-8-9V6l8-3Z"/>',
@@ -229,7 +230,10 @@ function sg_migalhas() {
 			$itens[] = array( $t->name, get_term_link( $t ) );
 		}
 		$itens[] = array( get_the_title(), '' );
+	} elseif ( function_exists( 'is_shop' ) && is_shop() ) {
+		$itens[] = array( get_the_title( wc_get_page_id( 'shop' ) ), '' );
 	} elseif ( function_exists( 'is_product_category' ) && is_product_category() ) {
+		$itens[] = array( __( 'Categorias', 'sao-geronimo' ), sg_url_categorias() );
 		$itens[] = array( single_term_title( '', false ), '' );
 	} elseif ( is_search() ) {
 		$itens[] = array( __( 'Busca', 'sao-geronimo' ), '' );
@@ -253,6 +257,16 @@ function sg_migalhas() {
 		}
 	}
 	echo '</nav></div>';
+}
+
+/**
+ * Endereço da página "Categorias" (a vitrine de todas as categorias).
+ *
+ * @return string
+ */
+function sg_url_categorias() {
+	$p = get_page_by_path( 'categorias' );
+	return $p ? get_permalink( $p ) : home_url( '/categorias/' );
 }
 
 /**

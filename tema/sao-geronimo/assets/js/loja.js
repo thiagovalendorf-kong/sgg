@@ -53,6 +53,12 @@
 	} );
 	window.matchMedia( '(min-width: 901px)' ).addEventListener( 'change', function ( e ) { if ( e.matches ) { fechar(); } } );
 
+	// Ordenar: troca a opção e a página recarrega sozinha.
+	document.addEventListener( 'change', function ( e ) {
+		var sel = e.target.closest( '.woocommerce-ordering select' );
+		if ( sel && sel.form ) { sel.form.submit(); }
+	} );
+
 	if ( ! form || ! aside ) { return; }
 	aside.classList.add( 'filtros--js' );
 

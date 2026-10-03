@@ -7,7 +7,7 @@
 /* ----------------------------------------------------- layout da loja */
 .loja-layout { display: grid; grid-template-columns: 264px minmax(0, 1fr); gap: var(--e-5) var(--e-6); align-items: start; }
 .loja-main .grade-prod { grid-template-columns: repeat(3, 1fr); gap: var(--e-4); }
-.barra-loja { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--e-2);
+.loja-layout .barra-loja { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--e-2);
   margin-bottom: var(--e-4); padding-bottom: var(--e-3); border-bottom: 1px solid var(--border); }
 .barra-loja .contagem { font-size: 13.5px; color: var(--muted-fg); }
 

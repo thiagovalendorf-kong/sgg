@@ -58,10 +58,10 @@ $sg_e_novo    = $sg_novo_dias > 0 && ( time() - get_post_time( 'U', true, $sg_id
 
 		<a href="<?php the_permalink(); ?>"><h3 class="prod__nome"><?php echo esc_html( $product->get_name() ); ?></h3></a>
 
-		<?php if ( $product->get_average_rating() > 0 ) : ?>
+		<?php $sg_nota = sg_nota( $product ); if ( $sg_nota > 0 ) : ?>
 			<div class="prod__nota">
 				<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2 3 6.5 7 .9-5 4.8 1.3 6.8L12 17.8 5.7 21l1.3-6.8-5-4.8 7-.9L12 2Z"/></svg>
-				<?php echo esc_html( number_format_i18n( $product->get_average_rating(), 1 ) ); ?>
+				<?php echo esc_html( number_format( $sg_nota, 1, '.', '' ) ); ?>
 			</div>
 		<?php endif; ?>
 

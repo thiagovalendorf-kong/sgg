@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SG_VERSAO', '1.3.0' );
+define( 'SG_VERSAO', '1.4.0' );
 define( 'SG_DIR', get_template_directory() );
 define( 'SG_URL', get_template_directory_uri() );
 
@@ -45,6 +45,8 @@ require_once SG_DIR . '/inc/busca.php';
 
 if ( class_exists( 'WooCommerce' ) ) {
 	require_once SG_DIR . '/inc/woocommerce.php';
+	require_once SG_DIR . '/inc/produto.php';
+	require_once SG_DIR . '/inc/frete.php';
 	require_once SG_DIR . '/inc/filtros.php';
 	require_once SG_DIR . '/inc/extras.php';
 	if ( is_admin() ) {

@@ -105,8 +105,8 @@ function sgc_secoes() {
 				array( 'k' => 'hero_sub', 't' => 'textarea', 'l' => 'Texto de apoio' ),
 				array( 'k' => 'hero_btn1_txt', 't' => 'text', 'l' => 'Botão 1 — texto', 'd' => 'Explorar produtos' ),
 				array( 'k' => 'hero_btn1_url', 't' => 'url', 'l' => 'Botão 1 — link', 'a' => 'Vazio = página da loja.' ),
-				array( 'k' => 'hero_btn2_txt', 't' => 'text', 'l' => 'Botão 2 — texto', 'a' => 'Vazio = o botão não aparece.' ),
-				array( 'k' => 'hero_btn2_url', 't' => 'url', 'l' => 'Botão 2 — link' ),
+				array( 'k' => 'hero_btn2_txt', 't' => 'text', 'l' => 'Botão 2 — texto', 'd' => 'Categorias', 'a' => 'Vazio = o botão não aparece.' ),
+				array( 'k' => 'hero_btn2_url', 't' => 'url', 'l' => 'Botão 2 — link', 'a' => 'Vazio = página Categorias.' ),
 				array( 'k' => 'estat1_n', 't' => 'text', 'l' => 'Número de destaque 1', 'p' => '15+' ),
 				array( 'k' => 'estat1_t', 't' => 'text', 'l' => 'Texto do número 1', 'p' => 'anos de história' ),
 				array( 'k' => 'estat2_n', 't' => 'text', 'l' => 'Número de destaque 2' ),
@@ -192,8 +192,9 @@ function sgc_secoes() {
 			'grupos' => array(
 				'Capa e filtros' => array(
 					array( 'k' => 'loja_titulo', 't' => 'text', 'l' => 'Título da página', 'd' => 'Loja' ),
-					array( 'k' => 'loja_desc', 't' => 'textarea', 'l' => 'Frase embaixo do título', 'p' => 'Tudo para o seu altar e o seu caminho.' ),
-					array( 'k' => 'loja_filtros', 't' => 'toggle', 'l' => 'Mostrar a barra de filtros', 'd' => 'sim' ),
+					array( 'k' => 'loja_desc', 't' => 'textarea', 'l' => 'Frase embaixo do título', 'd' => 'Todo o catálogo da São Gerônimo em um só lugar.' ),
+					array( 'k' => 'loja_filtros_modo', 't' => 'select', 'l' => 'Estilo dos filtros', 'd' => 'original', 'o' => array( 'original' => 'Igual ao site original (lista de categorias)', 'completo' => 'Completo (categorias, preço com marcadores, linha e disponibilidade; abre "Ver mais")' ), 'a' => 'Escolha como a lista da esquerda aparece na loja. Os itens abaixo só valem no estilo Completo.' ),
+					array( 'k' => 'loja_filtros', 't' => 'toggle', 'l' => 'Mostrar a barra de filtros (estilo Completo)', 'd' => 'sim' ),
 					array( 'k' => 'loja_filtro_categorias', 't' => 'toggle', 'l' => 'Filtro de categorias', 'd' => 'sim' ),
 					array( 'k' => 'loja_filtro_preco', 't' => 'toggle', 'l' => 'Filtro de preço', 'd' => 'sim' ),
 					array( 'k' => 'loja_filtro_linhas', 't' => 'toggle', 'l' => 'Filtro de linhas', 'd' => 'sim' ),
@@ -217,14 +218,16 @@ function sgc_secoes() {
 					array( 'k' => 'pix_desconto', 't' => 'number', 'l' => 'Desconto no Pix (%)', 'd' => 5, 'min' => 0, 'max' => 50 ),
 				),
 				'Selos de confiança' => array(
-					array( 'k' => 'produto_selos', 't' => 'toggle', 'l' => 'Mostrar os selos embaixo do botão de compra', 'd' => 'sim' ),
+					array( 'k' => 'produto_selos', 't' => 'toggle', 'l' => 'Mostrar os selos embaixo do botão de compra', 'd' => 'nao', 'a' => 'O site original não tinha selos; ligue se quiser.' ),
 					array( 'k' => 'produto_selo1', 't' => 'text', 'l' => 'Selo 1', 'd' => 'Compra 100% segura' ),
 					array( 'k' => 'produto_selo2', 't' => 'text', 'l' => 'Selo 2', 'd' => 'Enviamos para todo o Brasil' ),
 					array( 'k' => 'produto_selo3', 't' => 'text', 'l' => 'Selo 3', 'd' => 'Troca fácil em até 7 dias' ),
 					array( 'k' => 'produto_aviso', 't' => 'text', 'l' => 'Aviso pequeno embaixo (opcional)', 'p' => 'Produto artesanal: cor e tamanho podem variar.' ),
 				),
-				'Relacionados' => array(
-					array( 'k' => 'produto_relacionados', 't' => 'toggle', 'l' => 'Mostrar "produtos relacionados"', 'd' => 'sim' ),
+				'Frete e relacionados' => array(
+					array( 'k' => 'produto_frete', 't' => 'toggle', 'l' => 'Mostrar a caixa "Calcular frete e prazo"', 'd' => 'sim' ),
+					array( 'k' => 'produto_relacionados', 't' => 'toggle', 'l' => 'Mostrar "Quem viu, levou também"', 'd' => 'sim' ),
+					array( 'k' => 'produto_relacionados_titulo', 't' => 'text', 'l' => 'Título dessa faixa', 'd' => 'Quem viu, levou também' ),
 				),
 			),
 		),

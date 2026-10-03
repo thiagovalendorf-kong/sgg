@@ -89,10 +89,10 @@ if ( ! $sg_banners && ! sg_opt( 'hero_frase' ) ) {
 				if ( ! $sg_b1_url || '#' === $sg_b1_url ) {
 					$sg_b1_url = $sg_loja_url;
 				}
-				$sg_b2_txt = sg_opt( 'hero_btn2_txt' );
+				$sg_b2_txt = sg_opt( 'hero_btn2_txt', __( 'Categorias', 'sao-geronimo' ) );
 				$sg_b2_url = sg_opt( 'hero_btn2_url', '' );
 				if ( ! $sg_b2_url ) {
-					$sg_b2_url = '#';
+					$sg_b2_url = sg_url_categorias();
 				}
 				?>
 				<div class="hero__acoes">
