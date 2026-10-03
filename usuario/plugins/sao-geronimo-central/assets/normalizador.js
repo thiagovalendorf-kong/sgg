@@ -148,7 +148,15 @@
 	}
 
 	function inicia() {
-		enfileira( elementos( corpo ) );
+		// 1) a área principal é conferida de uma vez, antes de a tela aparecer (sem clarão branco);
+		// 2) o resto (menus, barras) vai aos poucos, porque o CSS já cobre quase tudo ali.
+		var principal = document.getElementById( 'wpbody-content' );
+		if ( principal ) {
+			processa( elementos( principal ) );
+			enfileira( elementos( corpo ).filter( function ( e ) { return ! principal.contains( e ); } ) );
+		} else {
+			enfileira( elementos( corpo ) );
+		}
 		// conteúdo que entra depois (abas, janelas, select2, variações carregadas por AJAX)
 		var espera = null, novos = [];
 		new MutationObserver( function ( lista ) {

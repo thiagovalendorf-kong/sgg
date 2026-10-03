@@ -129,3 +129,21 @@ function sgcv_editor_escuro( $init ) {
 	return $init;
 }
 add_filter( 'tiny_mce_before_init', 'sgcv_editor_escuro' );
+
+/**
+ * Pinta o fundo já no começo da página.
+ *
+ * Sem isso o navegador mostra um clarão branco entre uma tela do painel e outra
+ * (o CSS só chega depois). Aqui o fundo certo vai direto no <head>.
+ */
+function sgcv_pintura_precoce() {
+	$tela = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+	if ( $tela && method_exists( $tela, 'is_block_editor' ) && $tela->is_block_editor() ) {
+		return; // o editor de blocos cuida do próprio fundo
+	}
+	$escuro = 'escuro' === sgcv_modo();
+	$fundo  = $escuro ? '#0E1426' : '#FCFAF5';
+	echo '<meta name="color-scheme" content="' . ( $escuro ? 'dark' : 'light' ) . '">' . "\n";
+	echo '<style id="sgcv-pintura">html,body,#wpwrap,#wpcontent,#wpbody,#wpbody-content{background:' . $fundo . '}' . ( $escuro ? 'html{color-scheme:dark}#adminmenuback,#adminmenuwrap{background:#0B1020}#wpadminbar{background:#0B1020}' : '' ) . '</style>' . "\n";
+}
+add_action( 'admin_head', 'sgcv_pintura_precoce', 0 );

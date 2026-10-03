@@ -89,11 +89,12 @@ function sgc_itens_conhecidos() {
 		'cupons'      => array( 'Cupons', 'dashicons-tickets-alt', 'Códigos de desconto para campanhas.' ),
 		'relatorios'  => array( 'Relatórios', 'dashicons-chart-bar', 'Quanto você vendeu e o que mais sai.' ),
 		'produtos'    => array( 'Todos os produtos', 'dashicons-products', 'Lista, edição rápida, preço e estoque.' ),
-		'novo'        => array( 'Adicionar produto', 'dashicons-plus-alt', 'Cadastre foto, preço, estoque e variações.' ),
+		'novo'        => array( 'Adicionar produto', 'dashicons-plus-alt', 'Formulário completo do WooCommerce: variações, estoque e frete.' ),
 		'categorias'  => array( 'Categorias', 'dashicons-category', 'Os grupos em que a loja se divide.' ),
 		'etiquetas'   => array( 'Linhas e etiquetas', 'dashicons-tag', 'Agrupe produtos por linha ou tema.' ),
 		'atributos'   => array( 'Atributos', 'dashicons-editor-ul', 'Cor, tamanho e outras opções de variação.' ),
 		'catalogo'    => array( 'Atualizar pelo catálogo', 'dashicons-update', 'Atualize vários produtos de uma vez.' ),
+		'produto-facil' => array( 'Cadastro rápido de produto', 'dashicons-edit', 'Formulário curto, só com o essencial, para colocar um produto à venda.' ),
 		'importar-produtos' => array( 'Importar produtos', 'dashicons-upload', 'Traga os produtos do catálogo, com fotos, preços e descrições.' ),
 		'frete-entrega' => array( 'Frete e entrega', 'dashicons-car', 'Correios, Melhor Envio e suas transportadoras.' ),
 		'pagamentos-sg' => array( 'Pagamentos (Mercado Pago)', 'dashicons-money-alt', 'Pix, cartão e boleto.' ),
@@ -125,6 +126,7 @@ function sgc_itens_conhecidos() {
  */
 function sgc_regras_menu() {
 	return array(
+		array( '#^sg-produto-facil$#', 'catalogo', 'produto-facil', '', '' ),
 		array( '#^sg-importar$#', 'catalogo', 'importar-produtos', '', '' ),
 		array( '#^sg-frete$#', 'pagamento', 'frete-entrega', '', '' ),
 		array( '#^sg-pagamentos$#', 'pagamento', 'pagamentos-sg', '', '' ),
@@ -223,6 +225,38 @@ function sgc_tem_catalogo() {
 }
 
 /**
+ * Para itens de plugins que não têm regra: escolhe a seção pelo nome.
+ *
+ * @param string $titulo Título do item.
+ * @return string Seção (vendas, catalogo, pagamento, sistema).
+ */
+function sgc_secao_por_nome( $titulo ) {
+	$t = sgc_normaliza_titulo( $titulo );
+	if ( preg_match( '/pedido|cliente|cupom|cupon|relatorio|venda|assinatura|reembolso/', $t ) ) {
+		return 'vendas';
+	}
+	if ( preg_match( '/pagament|mercado|checkout|frete|entrega|envio|imposto|taxa|transport|correios/', $t ) ) {
+		return 'pagamento';
+	}
+	if ( preg_match( '/produto|estoque|atributo|\bmarcas\b|categoria|etiqueta|avaliac|variac|download/', $t ) ) {
+		return 'catalogo';
+	}
+	return 'sistema';
+}
+
+/**
+ * Título sem acento, emoji e pontuação, para comparar.
+ *
+ * @param string $t Título.
+ * @return string
+ */
+function sgc_normaliza_titulo( $t ) {
+	$t = remove_accents( wp_strip_all_tags( (string) $t ) );
+	$t = strtolower( preg_replace( '/[^A-Za-z0-9 ]+/', ' ', $t ) );
+	return trim( preg_replace( '/\s+/', ' ', $t ) );
+}
+
+/**
  * Monta as seções a partir do que existe nos menus do WordPress.
  *
  * @return array seção => lista de itens
@@ -295,7 +329,7 @@ function sgc_montar_secoes() {
 		} else {
 			foreach ( $pendentes as $e ) {
 				$e['link']   = sgc_slug_link( $e['slug'] );
-				$e['secao']  = in_array( $slug, array( 'edit.php?post_type=product' ), true ) ? 'catalogo' : 'sistema';
+				$e['secao']  = in_array( $slug, array( 'edit.php?post_type=product' ), true ) ? 'catalogo' : sgc_secao_por_nome( $e['titulo'] );
 				$e['chave']  = 'extra-' . sanitize_title( $e['slug'] );
 				$e['filhos'] = array();
 				$extras[]    = $e;
@@ -333,7 +367,7 @@ function sgc_montar_secoes() {
 	// Ordem dentro de cada seção.
 	$ordem = array(
 		'vendas'    => array( 'pedidos', 'clientes', 'cupons', 'relatorios' ),
-		'catalogo'  => array( 'produtos', 'novo', 'categorias', 'etiquetas', 'atributos', 'catalogo' ),
+		'catalogo'  => array( 'produtos', 'novo', 'produto-facil', 'categorias', 'etiquetas', 'atributos', 'importar-produtos', 'catalogo' ),
 		'conteudo'  => array( 'paginas', 'midia', 'comentarios' ),
 		'pagamento' => array( 'integracoes', 'config-loja', 'pagamentos' ),
 		'sistema'   => array( 'usuarios', 'plugins', 'ferramentas' ),
@@ -350,6 +384,21 @@ function sgc_montar_secoes() {
 	}
 	foreach ( $itens as $it ) {
 		$secoes[ isset( $secoes[ $it['secao'] ] ) ? $it['secao'] : 'sistema' ][] = $it;
+	}
+
+	// Sem itens repetidos: se dois plugins oferecem o mesmo nome (ex.: "Cupons"), fica o primeiro.
+	$vistos = array();
+	foreach ( $secoes as $sec => $lista ) {
+		$limpa = array();
+		foreach ( $lista as $it ) {
+			$k = sgc_normaliza_titulo( $it['titulo'] );
+			if ( isset( $vistos[ $k ] ) ) {
+				continue;
+			}
+			$vistos[ $k ] = true;
+			$limpa[]      = $it;
+		}
+		$secoes[ $sec ] = $limpa;
 	}
 
 	$GLOBALS['sgc_grupos'] = $grupos;
