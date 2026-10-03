@@ -94,6 +94,13 @@ function sgc_itens_conhecidos() {
 		'etiquetas'   => array( 'Linhas e etiquetas', 'dashicons-tag', 'Agrupe produtos por linha ou tema.' ),
 		'atributos'   => array( 'Atributos', 'dashicons-editor-ul', 'Cor, tamanho e outras opções de variação.' ),
 		'catalogo'    => array( 'Atualizar pelo catálogo', 'dashicons-update', 'Atualize vários produtos de uma vez.' ),
+		'importar-produtos' => array( 'Importar produtos', 'dashicons-upload', 'Traga os produtos do catálogo, com fotos, preços e descrições.' ),
+		'frete-entrega' => array( 'Frete e entrega', 'dashicons-car', 'Correios, Melhor Envio e suas transportadoras.' ),
+		'pagamentos-sg' => array( 'Pagamentos (Mercado Pago)', 'dashicons-money-alt', 'Pix, cartão e boleto.' ),
+		'seo'         => array( 'SEO, GEO e AEO', 'dashicons-search', 'Como o Google e as IAs enxergam cada página.' ),
+		'controladoria' => array( 'Controladoria', 'dashicons-chart-area', 'Clientes, compras e resultados num só lugar.' ),
+		'assistente'  => array( 'Primeiros passos', 'dashicons-flag', 'Passo a passo para deixar a loja pronta.' ),
+		'painel-sg'   => array( 'Painel São Gerônimo', 'dashicons-store', 'Visão geral do painel da loja.' ),
 		'paginas'     => array( 'Páginas', 'dashicons-admin-page', 'Contato, trocas e devoluções, políticas…' ),
 		'midia'       => array( 'Mídia', 'dashicons-admin-media', 'Todas as fotos e arquivos enviados ao site.' ),
 		'comentarios' => array( 'Comentários', 'dashicons-admin-comments', 'Respostas e avaliações dos visitantes.' ),
@@ -118,6 +125,14 @@ function sgc_itens_conhecidos() {
  */
 function sgc_regras_menu() {
 	return array(
+		array( '#^sg-importar$#', 'catalogo', 'importar-produtos', '', '' ),
+		array( '#^sg-frete$#', 'pagamento', 'frete-entrega', '', '' ),
+		array( '#^sg-pagamentos$#', 'pagamento', 'pagamentos-sg', '', '' ),
+		array( '#^sg-seo$#', 'conteudo', 'seo', '', '' ),
+		array( '#^sg-controladoria$#', 'vendas', 'controladoria', '', '' ),
+		array( '#^sg-assistente$#', 'sistema', 'assistente', '', '' ),
+		array( '#^sg-painel$#', 'sistema', 'painel-sg', '', '' ),
+		array( '#^sg-painel-#', 'sistema', 'painel-sg-aba', 'painel-sg', '' ),
 		array( '#^wc-admin$#', 'ignorar', '', '', '' ),
 		array( '#^wc-admin&path=/(extensions|marketing|my-subscriptions)#', 'ignorar', '', '', '' ),
 		array( '#^(woocommerce-marketing|woocommerce_extensions)$#', 'ignorar', '', '', '' ),
