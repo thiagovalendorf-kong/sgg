@@ -21,5 +21,7 @@ require_once SGC_DIR . 'inc/dados.php';
 require_once SGC_DIR . 'inc/campos.php';
 require_once SGC_DIR . 'inc/central.php';
 require_once SGC_DIR . 'inc/integracoes.php';
+require_once SGC_DIR . 'inc/produto-ux.php';
+require_once SGC_DIR . 'inc/catalogo.php';
 require_once SGC_DIR . 'inc/menu.php';
 require_once SGC_DIR . 'inc/visual.php';

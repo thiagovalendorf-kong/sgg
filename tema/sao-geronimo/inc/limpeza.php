@@ -98,7 +98,10 @@ add_action( 'init', 'sg_paginas_classicas', 40 );
  * CSS e JS da loja (filtros, carrinho, checkout, conta).
  */
 function sg_assets_loja() {
-	wp_enqueue_style( 'sg-loja', SG_URL . '/assets/css/loja.css', array( 'sg-tema' ), SG_VERSAO );
+	wp_enqueue_style( 'sg-wcbase', SG_URL . '/assets/css/wcbase.css', array( 'sg-tema' ), SG_VERSAO );
+	wp_enqueue_style( 'sg-loja', SG_URL . '/assets/css/loja.css', array( 'sg-wcbase' ), SG_VERSAO );
+	wp_enqueue_style( 'sg-filtros', SG_URL . '/assets/css/filtros.css', array( 'sg-loja' ), SG_VERSAO );
+	wp_enqueue_style( 'sg-produto', SG_URL . '/assets/css/produto.css', array( 'sg-loja' ), SG_VERSAO );
 	wp_enqueue_script( 'sg-loja', SG_URL . '/assets/js/loja.js', array(), SG_VERSAO, true );
 }
 add_action( 'wp_enqueue_scripts', 'sg_assets_loja', 20 );
