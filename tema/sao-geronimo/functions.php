@@ -45,4 +45,7 @@ require_once SG_DIR . '/inc/busca.php';
 
 if ( class_exists( 'WooCommerce' ) ) {
 	require_once SG_DIR . '/inc/woocommerce.php';
+	require_once SG_DIR . '/inc/filtros.php';
 }
+
+require_once SG_DIR . '/inc/limpeza.php';

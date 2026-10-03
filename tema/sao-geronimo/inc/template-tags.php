@@ -18,6 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function sg_icone( $nome, $tam = 17 ) {
 	$d = array(
+		'filtro'    => '<path d="M4 6h16M7 12h10M10 18h4"/>',
 		'busca'     => '<circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/>',
 		'conta'     => '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
 		'coracao'   => '<path d="M12 20s-7-4.6-7-9.3A4 4 0 0 1 12 8a4 4 0 0 1 7 2.7C19 15.4 12 20 12 20Z"/>',

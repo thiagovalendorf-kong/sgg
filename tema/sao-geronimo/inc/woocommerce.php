@@ -55,7 +55,9 @@ function sg_wc_abre() {
 	echo '<section class="sec sec--curto" style="padding-top:' . ( $e_lista ? '0' : '8px' ) . '"><div class="wrap">';
 
 	if ( $e_lista ) {
-		sg_wc_pilulas();
+		echo '<div class="loja-layout">';
+		sg_wc_filtros();
+		echo '<div class="loja-main">';
 		sg_wc_barra();
 	}
 }
@@ -104,18 +106,23 @@ function sg_wc_barra() {
 	$n = (int) $wp_query->found_posts;
 
 	echo '<div class="barra-loja">';
+	sg_wc_filtros_topo_botao();
 	printf(
 		'<span class="contagem" data-contagem>%s</span>',
 		esc_html( sprintf( _n( '%d produto', '%d produtos', $n, 'sao-geronimo' ), $n ) )
 	);
 	woocommerce_catalog_ordering();
 	echo '</div>';
+	sg_wc_filtros_topo();
 }
 
 /**
  * Fechamento das páginas do Woo.
  */
 function sg_wc_fecha() {
+	if ( is_shop() || is_product_category() || is_product_tag() ) {
+		echo '</div></div>'; // fecha .loja-main e .loja-layout
+	}
 	echo '</div></section>';
 }
 
